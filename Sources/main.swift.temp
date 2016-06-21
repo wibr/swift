@@ -1,0 +1,30 @@
+
+
+struct PrintSampleListener : SampleListener {
+	func start(count:Int) {
+		print("number-of-samples: \(count)")
+	}
+	func next(indices:[Int], sequence:Int) -> Bool{
+		print("[\(sequence)] - indices: \(indices)")
+		return false
+	}
+}
+
+let populationSize = 5
+let sampleSize = 3
+print("population-size:\(populationSize), sample-size: \(sampleSize)")
+print("Generating combinations")
+
+do{
+	let combinations = try Combinations(populationSize: populationSize, sampleSize: sampleSize)
+	combinations.generate(listener:PrintSampleListener())
+	print("Generating permutations")
+	let permutations = try Permutations(populationSize: populationSize, sampleSize: sampleSize)
+	permutations.generate(listener:PrintSampleListener())
+	print("Generating samples")
+	let samples = try Samples(populationSize: populationSize, sampleSize: sampleSize)
+	samples.generate(listener:PrintSampleListener())
+}
+catch let error {
+	print("Error: \(error)")
+}
