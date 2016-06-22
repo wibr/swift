@@ -31,7 +31,7 @@ public enum InitialisationError : ErrorProtocol {
 	case MissingArgument(String)
 }
 
-extension Array {
+public extension Array {
     mutating func shuffle () {
         for i in (0..<self.count).reversed() {
             let ix1 = i
