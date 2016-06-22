@@ -34,6 +34,10 @@ public class SampleGenerator {
 
 	public func generate(listener: SampleListener) {
 	}
+
+	public func generate() -> [[Int]] {
+		return [[Int]]()
+	}
 }
 
 public class Permutations : SampleGenerator  {
@@ -51,6 +55,12 @@ public class Permutations : SampleGenerator  {
 		listener.start(count:Int(count))
 		self.sequenceNr = 0
 		self.permutations(0, listener)
+	}
+
+	override public func generate() -> [[Int]]{
+		let collector = Collector()
+		self.generate(listener:collector)
+		return collector.indices
 	}
 
 	private func permutations(_ k: Int, _ listener: SampleListener){
@@ -86,6 +96,12 @@ public class Combinations : SampleGenerator {
 		listener.start(count:Int(count))
 		self.sequenceNr = 0
 		self.combinations(1, listener)
+	}
+	
+	override public func generate() -> [[Int]]{
+		let collector = Collector()
+		self.generate(listener:collector)
+		return collector.indices
 	}
 
 	private func combinations( _ k: Int, _ listener: SampleListener) {
@@ -123,6 +139,12 @@ public class Samples : SampleGenerator {
 		self.samples(0, listener)
 	}
 	
+	override public func generate() -> [[Int]]{
+		let collector = Collector()
+		self.generate(listener:collector)
+		return collector.indices
+	}
+
 	private func samples(_ k:Int, _ listener:SampleListener)	{
 		self.row[k] = 0
 		while ( self.row[k] < self.populationSize ) {
@@ -144,3 +166,16 @@ public class Samples : SampleGenerator {
 		}
 	}
 }
+
+
+private class Collector : SampleListener {
+	var indices = [[Int]]()
+
+	func start(count:Int) {}
+
+	func next(indices:[Int], sequence:Int) -> Bool{
+		self.indices.append(indices);
+		return false
+	}
+}
+
