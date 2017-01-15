@@ -115,7 +115,7 @@ public struct CLI {
     }
     
     public var appName: String {
-        return Process.arguments[0]
+        return CommandLine.arguments[0]
     }
     
     public func usage() {
@@ -153,7 +153,7 @@ public struct CLI {
     }
     
     public func processArgs() -> [String:SimpleType] {
-        let args = Process.arguments
+        let args = CommandLine.arguments
         var values = [String:SimpleType]()
         var index = 1
         let count = args.count

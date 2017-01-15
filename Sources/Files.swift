@@ -15,7 +15,7 @@ public struct Files {
     }
     
     public static func fileExists(name:String) -> Bool {
-        let filemgr = FileManager.default()
+        let filemgr = FileManager.default
         return filemgr.fileExists(atPath: name)
     }
     
@@ -28,7 +28,7 @@ public struct FileWalker {
     
     init(rootDir:String){
         self.rootDir = rootDir
-        self.filemgr = FileManager.default()
+        self.filemgr = FileManager.default
     }
     
     func collectFiles(callback: (String, String) -> Void ){

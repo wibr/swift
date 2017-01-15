@@ -26,7 +26,7 @@ public func swap<T>(_ row: inout [T], _ first: Int, _ second: Int){
 }
 
 
-public enum InitialisationError : ErrorProtocol {
+public enum InitialisationError : Error {
 	case InvalidArgument(String)
 	case MissingArgument(String)
 }
