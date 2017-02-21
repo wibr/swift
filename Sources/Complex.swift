@@ -1,5 +1,5 @@
 
-struct ComplexNumber{
+public struct ComplexNumber{
     static let Zero = ComplexNumber()
     
 	let real: Double
@@ -57,42 +57,42 @@ struct ComplexNumber{
 
 extension ComplexNumber : Equatable {
     
-    static func == (lhs:ComplexNumber, rhs:ComplexNumber ) -> Bool {
+    public static func == (lhs:ComplexNumber, rhs:ComplexNumber ) -> Bool {
         return lhs.real == rhs.real && lhs.imaginary == rhs.imaginary
     }
     
-    static func + (lhs:ComplexNumber, rhs:ComplexNumber) -> ComplexNumber {
+    public static func + (lhs:ComplexNumber, rhs:ComplexNumber) -> ComplexNumber {
         return lhs.add(number: rhs)
     }
     
-    static prefix func - (number:ComplexNumber) -> ComplexNumber {
+    public static prefix func - (number:ComplexNumber) -> ComplexNumber {
         return ComplexNumber(real: -number.real, imaginary: -number.imaginary)
     }
     
-    static func - (lhs:ComplexNumber, rhs:ComplexNumber) -> ComplexNumber {
+    public static func - (lhs:ComplexNumber, rhs:ComplexNumber) -> ComplexNumber {
         return lhs + -rhs
     }
     
-    static func * (lhs:ComplexNumber, rhs:ComplexNumber) -> ComplexNumber {
+    public static func * (lhs:ComplexNumber, rhs:ComplexNumber) -> ComplexNumber {
         return lhs.multiply(with: rhs)
     }
     
-    static func / (lhs:ComplexNumber, rhs: ComplexNumber) -> ComplexNumber? {
+    public static func / (lhs:ComplexNumber, rhs: ComplexNumber) -> ComplexNumber? {
         return lhs.divide(by: rhs)
     }
     
-    static func ^ (number:ComplexNumber, exponent: UInt8) -> ComplexNumber {
+    public static func ^ (number:ComplexNumber, exponent: UInt8) -> ComplexNumber {
         return number.power(exponent: exponent)
     }
 
-    static prefix func ! (number:ComplexNumber) -> ComplexNumber {
+    public static prefix func ! (number:ComplexNumber) -> ComplexNumber {
         return number.conjugate()
     }
 
 }
 
 extension ComplexNumber : CustomStringConvertible {
-    var description: String {
+    public var description: String {
         if self == ComplexNumber.Zero {
             return "()"
         }
@@ -110,6 +110,4 @@ extension ComplexNumber : CustomStringConvertible {
         }
         return "(\(self.real) \(token) \(ival)i)"
     }
-    
-    
 }
