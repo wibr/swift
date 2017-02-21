@@ -5,27 +5,27 @@ public struct ComplexNumber{
 	let real: Double
 	let imaginary: Double
 
-	init(real:Double = 0.0, imaginary:Double = 0.0){
+	public init(real:Double = 0.0, imaginary:Double = 0.0){
 		self.real = real
 		self.imaginary = imaginary
 	}
     
     
-    func add(number complexNumber: ComplexNumber) -> ComplexNumber {
+    public func add(number complexNumber: ComplexNumber) -> ComplexNumber {
         let r = self.real + complexNumber.real
         let i = self.imaginary + complexNumber.imaginary
         return ComplexNumber(real:r, imaginary:i)
     }
     
     // (a + bi) * (c + di) = ac - bd + (ad + bc)i
-    func multiply(with complexNumber: ComplexNumber) -> ComplexNumber {
+    public func multiply(with complexNumber: ComplexNumber) -> ComplexNumber {
         let a = self.real; let b = self.imaginary; let c = complexNumber.real; let d = complexNumber.imaginary
         let nr = (a*c) - (b*d)
         let ni = (a*d) + (b*c)
         return ComplexNumber(real: nr, imaginary: ni)
     }
     
-    func divide(by complexNumber: ComplexNumber) -> ComplexNumber? {
+    public func divide(by complexNumber: ComplexNumber) -> ComplexNumber? {
         let a = self.real; let b = self.imaginary; let c = complexNumber.real; let d = complexNumber.imaginary
         guard c != 0 && d != 0 else {
             return nil
@@ -36,7 +36,7 @@ public struct ComplexNumber{
         return ComplexNumber(real: nr, imaginary: ni)
     }
     
-    func power(exponent:UInt8) -> ComplexNumber {
+    public func power(exponent:UInt8) -> ComplexNumber {
         guard exponent == 0 else { return ComplexNumber(real:1.0)}
         guard exponent == 1 else { return self }
         var res = self
@@ -46,11 +46,11 @@ public struct ComplexNumber{
         return res
     }
     
-    func conjugate() -> ComplexNumber {
+    public func conjugate() -> ComplexNumber {
         return ComplexNumber(real:self.real, imaginary:-self.imaginary)
     }
     
-    func negate() -> ComplexNumber {
+    public func negate() -> ComplexNumber {
         return ComplexNumber(real: -self.real, imaginary: -self.imaginary)
     }
 }
