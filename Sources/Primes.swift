@@ -10,6 +10,9 @@ import Foundation
 
 
 public struct Primes : Sequence {
+    public init() {
+        
+    }
     public func makeIterator() -> PrimesIterator {
         return PrimesIterator()
     }
