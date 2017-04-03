@@ -34,7 +34,7 @@ public struct PrimesIterator : IteratorProtocol {
         }
         else {
             next += 2
-            if self.found.contains(where: {next % $0 == 0}) {
+            while self.found.contains(where: {next % $0 == 0}) {
                 next += 2
             }
         }
