@@ -41,7 +41,38 @@ class WibrToolsTests: XCTestCase {
                 return
             }
         }
-
+    }
+    
+    func testMatrix() {
+        let rows = 3
+        let columns = 4
+        var matrix = Matrix<Int>(rows: rows, columns: columns)
+        for row in 0..< rows {
+            for col in 0..< columns {
+                matrix[row,col] = (row+1) * (col+1)
+            }
+        }
+        print( matrix )
+        for row in 1..<rows-1 {
+            for col in 1..<columns-1 {
+                let sub = matrix.adjacent(to: (row,col))
+                let prod = sub.flatMap{sub[$0]}.reduce(1){$0*$1}
+                print("\(sub) : \(prod)")
+            }
+        }
+        
+        
+        
+        for c in matrix {
+            print(matrix[c]!)
+        }
+        
+        let cell = (row:0, column:0)
+        let submatrix = matrix.adjacent(to: cell)
+        print(submatrix)
+        
+        let product = matrix.flatMap({matrix[$0]}).reduce(1,{$0*$1})
+        print(product)
     }
     
 }
