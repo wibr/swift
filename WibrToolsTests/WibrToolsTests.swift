@@ -47,8 +47,8 @@ class WibrToolsTests: XCTestCase {
         let rows = 3
         let columns = 4
         var matrix = Matrix<Int>(rows: rows, columns: columns)
-        for row in 0..< rows {
-            for col in 0..< columns {
+        for row in 0 ..< rows {
+            for col in 0 ..< columns {
                 matrix[row,col] = (row+1) * (col+1)
             }
         }
@@ -61,7 +61,10 @@ class WibrToolsTests: XCTestCase {
             }
         }
         
-        
+        let values = [[2,3,4,5],[4,3,5,2],[3,4,2,5]]
+        let vm = Matrix<Int>(values:values)
+        print(vm)
+
         
         for c in matrix {
             print(matrix[c]!)

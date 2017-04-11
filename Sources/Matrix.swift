@@ -37,6 +37,12 @@ struct Matrix<T> : Sequence, CustomStringConvertible {
         }
     }
     
+    init(values:[[T?]]){
+        for row in 0 ..< values.count {
+            grid.append(values[row])
+        }
+    }
+    
     var rowSize : Int {
         return grid.count
     }
