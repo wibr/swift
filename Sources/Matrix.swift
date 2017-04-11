@@ -8,9 +8,9 @@
 
 import Foundation
 
-typealias Cell = (row:Int, column:Int)
+public typealias Cell = (row:Int, column:Int)
 
-enum Direction {
+public enum Direction {
     case north
     case east
     case south
@@ -24,10 +24,10 @@ enum Direction {
     }
 }
 
-struct Matrix<T> : Sequence, CustomStringConvertible {
+public struct Matrix<T> : Sequence, CustomStringConvertible {
     var grid = [[T?]]()
     
-    init(rows:Int, columns:Int){
+    public init(rows:Int, columns:Int){
         for _ in 0..<rows {
             var colArray = [T?]()
             for _ in 0..<columns{
@@ -37,32 +37,32 @@ struct Matrix<T> : Sequence, CustomStringConvertible {
         }
     }
     
-    init(values:[[T?]]){
+    public init(values:[[T?]]){
         for row in 0 ..< values.count {
             grid.append(values[row])
         }
     }
     
-    var rowSize : Int {
+    public var rowSize : Int {
         return grid.count
     }
     
-    var columnSize : Int {
+    public public var columnSize : Int {
         if rowSize > 0 {
             return grid[0].count
         }
         return 0
     }
     
-    var lastCell: Cell {
+    public var lastCell: Cell {
         return (row:rowSize-1,column:columnSize-1)
     }
     
-    var firstCell: Cell {
+    public var firstCell: Cell {
         return (0,0)
     }
     
-    var numberOfValuesSet : Int {
+    public var numberOfValuesSet : Int {
         return self.filter{self[$0] != nil}.count
     }
     
@@ -84,7 +84,7 @@ struct Matrix<T> : Sequence, CustomStringConvertible {
         }
     }
     
-    func gotoCell(cell:Cell, direction:Direction) -> Cell? {
+    public func gotoCell(cell:Cell, direction:Direction) -> Cell? {
         switch direction {
             case .north : return (cell.row > 0) ? (row: cell.row - 1 , column:cell.column) : nil
             case .south : return (cell.row < rowSize - 1 ) ? (row: cell.row + 1, column:cell.column) : nil
@@ -93,7 +93,7 @@ struct Matrix<T> : Sequence, CustomStringConvertible {
         }
     }
     
-    func adjacent(to cell:Cell) -> Matrix {
+    public func adjacent(to cell:Cell) -> Matrix {
         let r0 = (cell.row > 0) ? cell.row - 1 : 0
         let r1 = (cell.row < rowSize - 1) ? cell.row + 1 : rowSize - 1
         let c0 = (cell.column > 0) ? cell.column - 1 : 0
