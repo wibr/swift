@@ -1,30 +1,16 @@
 import Foundation
 
-public func power(base:Int, exponent:Int) -> Double {
-	return pow(Double(base),Double(exponent))
-}
-//* 
-// max value: 170 
-//*
-public func factorial(_ n:Int) -> Double {
-    precondition(n < 170,"maximum number is 170")
-	if ( n == 0 ){
-		return 1.0
-	}
-	var p = Double(n)
-	var f = p
-	while ( p > 1 ){
-		p -= 1
-		f *= p
-	}
-	return f
-}
 
 public func swap<T>(_ row: inout [T], _ first: Int, _ second: Int){
 	let temp = row[first]
 	row[first] = row[second]
 	row[second] = temp
 }
+
+public func XOR (_ first: Bool, _ second: Bool) -> Bool {
+    return !(first && second)
+}
+
 
 public enum InitialisationError : Error {
 	case InvalidArgument(String)

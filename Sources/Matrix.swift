@@ -16,10 +16,41 @@ public enum Direction {
     case south
     case west
     
-    var value: Int {
+    public func isOpposite(of direction:Direction) -> Bool {
         switch self {
-          case .north, .west : return -1
-          case .east, .south : return 1
+            case .north : return direction == .south
+            case .east : return direction == .west
+            case .south : return direction == .north
+            case .west : return direction == .east
+        }
+    }
+    
+    public func next(movement:Int = 1) -> Direction {
+        if movement > 0 {
+            switch self {
+            case .north : return .east
+            case .east : return .south
+            case .south : return .west
+            case .west : return .north
+            }
+        }
+        else if movement < 0 {
+            switch self {
+            case .north : return .west
+            case .west : return .south
+            case .south : return .east
+            case .east : return .north
+            }
+        }
+        return self
+    }
+    
+    public func move(cell:Cell) -> Cell {
+        switch self {
+            case .north : return Cell(row:cell.row - 1 , column:cell.column)
+            case .east : return Cell(row:cell.row, column: cell.column + 1)
+            case .south: return Cell(row:cell.row + 1, column: cell.column)
+            case .west : return Cell(row: cell.row, column: cell.column - 1)
         }
     }
 }
@@ -47,7 +78,7 @@ public struct Matrix<T> : Sequence, CustomStringConvertible {
         return grid.count
     }
     
-    public public var columnSize : Int {
+    public var columnSize : Int {
         if rowSize > 0 {
             return grid[0].count
         }
@@ -85,12 +116,8 @@ public struct Matrix<T> : Sequence, CustomStringConvertible {
     }
     
     public func gotoCell(cell:Cell, direction:Direction) -> Cell? {
-        switch direction {
-            case .north : return (cell.row > 0) ? (row: cell.row - 1 , column:cell.column) : nil
-            case .south : return (cell.row < rowSize - 1 ) ? (row: cell.row + 1, column:cell.column) : nil
-            case .west : return (cell.column > 0 ) ? (row: cell.row, column: cell.column - 1) : nil
-            case .east : return (cell.column < columnSize - 1 ) ? (row: cell.row, column: cell.column + 1) : nil
-        }
+        let result = direction.move(cell: cell)
+        return self.contains(cell: result) ? result : nil
     }
     
     public func adjacent(to cell:Cell) -> Matrix {
@@ -105,6 +132,30 @@ public struct Matrix<T> : Sequence, CustomStringConvertible {
             }
         }
         return matrix
+    }
+    
+    public func contains(cell:Cell) -> Bool {
+        return cell.row >= 0 && cell.row < self.rowSize && cell.column >= 0 && cell.column < self.columnSize
+    }
+    
+    /**
+     *
+     */
+    public func getValues(cell:Cell, directions:[Direction], count:Int) -> [T]?{
+        var results = [T]()
+        var current = cell
+        for _ in 0..<count {
+            for direction in directions {
+                current = direction.move(cell: current)
+            }
+            if !self.contains(cell: current){
+                return nil
+            }
+            if let value = self[current]{
+                results.append(value)
+            }
+        }
+        return results
     }
     
     public func row(index:Int) -> [T?] {

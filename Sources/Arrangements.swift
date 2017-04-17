@@ -51,7 +51,7 @@ public class Permutations : SampleGenerator  {
 		for k in 0 ..< self.populationSize {
 			self.row[k] = k
 		}
-		let count = factorial(self.populationSize) / factorial(self.populationSize - self.sampleSize)
+		let count = Math.factorial(self.populationSize) / Math.factorial(self.populationSize - self.sampleSize)
 		listener.start(count:Int(count))
 		self.sequenceNr = 0
 		self.permutations(0, listener)
@@ -92,7 +92,7 @@ public class Combinations : SampleGenerator {
 	
 	override public func generate(listener: SampleListener){
         self.row = [Int](repeating: 0, count:self.sampleSize+1)
-		let count = factorial(self.populationSize) / (factorial(self.sampleSize) * factorial(self.populationSize - self.sampleSize))
+		let count = Math.factorial(self.populationSize) / (Math.factorial(self.sampleSize) * Math.factorial(self.populationSize - self.sampleSize))
 		listener.start(count:Int(count))
 		self.sequenceNr = 0
 		self.combinations(1, listener)
@@ -133,7 +133,7 @@ public class Samples : SampleGenerator {
 
 	override public func generate(listener: SampleListener) {
 		self.row = [Int](repeating:0, count:self.populationSize)
-		let count = power(base:self.populationSize, exponent:self.sampleSize)
+		let count = Math.power(base:self.populationSize, exponent:self.sampleSize)
 		listener.start(count:Int(count))
 		self.sequenceNr = 0
 		self.samples(0, listener)

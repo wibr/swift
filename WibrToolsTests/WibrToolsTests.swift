@@ -78,4 +78,33 @@ class WibrToolsTests: XCTestCase {
         print(product)
     }
     
+    func testBigInt() {
+        let n:BigInt = "-9933893923746842983483838399337123128371329633456"
+        print(n)
+        let m:BigInt = "382487367782920039376462636e81374382943174327688"
+        print(m)
+        let sum = n + m
+        print(sum)
+        
+    }
+    
+    func testSubtract() {
+        let n2:BigInt = 10000
+        let n1:BigInt = 9999
+        let diff = n1 - n2
+        print("\(n1) - \(n2) = \(diff)")
+        
+        print("\(n1 <> n2)")
+        
+        for n in stride(from:-3,to:6,by:4){
+            let f = BigInt(value:n)
+            for m in stride(from: -7, to: 4, by: 5){
+                let s = BigInt(value:m)
+                print("\(f) + \(s) = \(f + s)")
+                print("\(f) - \(s) = \(f - s)")
+                
+            }
+        }
+    }
+    
 }
