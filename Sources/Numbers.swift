@@ -8,45 +8,79 @@
 
 import Foundation
 
+public enum Sign : String {
+    case positive = "+"
+    case negative = "-"
+    
+    static func from(value:Int) -> Sign? {
+        return value > 0 ? .positive : (value < 0 ? .negative : nil)
+    }
+    
+    func flip() -> Sign {
+        switch self {
+            case .positive : return .negative
+            case .negative : return .positive
+        }
+    }
+}
+
+typealias BigIntOperation = ((BigInt,BigInt) -> BigInt)
 
 public struct BigInt : CustomStringConvertible {
+    
+    static var addScheme = Matrix<BigIntOperation>(rows:3, columns:3)
+    static var subtractScheme = Matrix<BigIntOperation>(rows:3, columns:3)
+    
     fileprivate var values:[Int]
-    var negative = false
+    var sign:Sign?
     
     var length: Int {
         return values.count
     }
     
-    public init(values: [Int], negative:Bool = false){
+    private var schemeIndex:Int {
+        if let s = self.sign {
+            return s == .positive ? 0 : 2
+        }
+        return 1
+    }
+    
+    public init(values: [Int], sign:Sign? = .positive){
         var array = values.map{$0 % 10}
         while let value = array.first, value == 0 {
             array.removeFirst()
         }
-        self.negative = negative
+        if let s = sign {
+            self.sign = s
+        }
+        if array[0] == 0 {
+            self.sign = .none
+        }
         self.values = array.reversed()
     }
     
     public init(string:String){
         var s = string
-        var ltz = false
+        var sgn:Sign?
         if let idx = s.characters.index(of:"-"), idx == s.startIndex {
             let fromIndex = s.characters.index(after: idx)
             s = s[fromIndex ..< s.endIndex]
-            ltz = true
+            sgn = .negative
         }
         let array = s.characters.flatMap{Int(String($0))}
-        self.init(values:array)
-        self.negative = ltz
+        if let first = array.first, first == 0 {
+            sgn = .none
+        }
+        else if sgn == nil {
+            sgn = .positive
+        }
+        self.init(values:array, sign:sgn)
     }
     
     public init(value:Int){
         self.values = [Int]()
-        self.negative = false
-        var v = value
-        if v < 0 {
-            v = v * -1
-            self.negative = true
-        }
+        self.sign = Sign.from(value: value)
+        var v = abs(value)
         repeat {
             self.values.append(v % 10)
             v = v / 10
@@ -55,17 +89,32 @@ public struct BigInt : CustomStringConvertible {
     
     private init(){
         self.values = [Int]()
-        self.negative = false
+        self.sign = .none
     }
     
     public mutating func negated() -> BigInt {
-        self.negative = !self.negative
+        if let s = self.sign {
+            self.sign = s.flip()
+        }
         return self
     }
     
     public func add(_ other:BigInt) -> BigInt {
+        
+        
+        if self.negative && other.negative {
+            var result = self.sum(first: self, second: other)
+            return result.negated()
+        }
+        if self.negative && !other.negative {
+            let c = self <> other
+            if c == 0 {
+                return BigInt(value:0)
+            }
+            var result = self.diff(first: )
+        }
         if XOR(self.negative, other.negative) {
-            var result = self.diff(first:self, second:other)
+            var result = self < other ? self.diff(first: other, second: self) : self.diff(first: self, second: other)
             return result.negated()
         }
         return self.sum(first:self, second: other)
@@ -82,7 +131,7 @@ public struct BigInt : CustomStringConvertible {
         return self.diff(first:self, second:other)
     }
     
-    private func sum(first: BigInt, second:BigInt) -> BigInt {
+    fileprivate func sum(first: BigInt, second:BigInt) -> BigInt {
         var values = [Int]()
         var remainder = false
         var index = 0
@@ -108,22 +157,14 @@ public struct BigInt : CustomStringConvertible {
         return BigInt(values:values)
     }
     
-    private func diff(first:BigInt, second: BigInt) -> BigInt {
-        var largest = first
-        var smallest = second
-        var lessThanZero = false
-        if largest.compare(smallest) < 0 {
-            lessThanZero = true
-            largest = second
-            smallest = first
-        }
+    fileprivate func diff(big:BigInt, small: BigInt) -> BigInt {
         var values = [Int]()
         var borrow = false
-        let smallestLength = smallest.length
+        let smallLength = small.length
         var index = 0
-        for var lval in largest.values {
-            if index < smallestLength {
-                let sval = smallest.values[index]
+        for var lval in big.values {
+            if index < smallLength {
+                let sval = small.values[index]
                 if borrow {
                    lval -= 1
                 }
@@ -153,7 +194,7 @@ public struct BigInt : CustomStringConvertible {
         while let value = values.last, value == 0 {
             values.removeLast()
         }
-        return BigInt(values:values, negative:lessThanZero)
+        return BigInt(values:values)
     }
     
     private func addNum(num: Int, remainder:inout Bool) -> Int {
@@ -168,7 +209,7 @@ public struct BigInt : CustomStringConvertible {
     }
     
     public var description: String {
-        let token = negative ? "-" : ""
+        let token = (self.sign == .none)  ? "" : self.sign!.rawValue
         return token + self.values.reversed().map({String.init(describing:$0)}).joined()
     }
 }
@@ -234,7 +275,8 @@ extension BigInt : Comparable{
     }
 
     public static func < (lhs:BigInt, rhs:BigInt) -> Bool {
-        return (lhs <> rhs) < 0
+        let c = lhs <> rhs
+        return  c < 0
     }
     
     public static func > (lhs:BigInt, rhs:BigInt) -> Bool {
@@ -260,5 +302,92 @@ extension BigInt : ExpressibleByStringLiteral {
 extension BigInt : ExpressibleByIntegerLiteral {
     public init(integerLiteral value: Int){
         self = BigInt(value:value)
+    }
+}
+
+extension BigInt {
+    func p_add_p(first:BigInt,second:BigInt) ->BigInt {
+        var result = sum(first:first,second:second)
+        result.sign = .positive
+        return result
+    }
+    
+    func n_add_n(first:BigInt,second:BigInt) -> BigInt {
+        var result = sum(first:first,second:second)
+        result.sign = .negative
+        return result
+    }
+
+    func z_add_p(first:BigInt,second:BigInt) -> BigInt {
+        return second
+    }
+
+    func z_add_n(first:BigInt,second:BigInt) -> BigInt {
+        return second
+    }
+    
+    func z_add_z(first:BigInt,second:BigInt) -> BigInt {
+        return second
+    }
+    func z_add(first:BigInt,second:BigInt) -> BigInt {
+        return second
+    }
+    
+    func n_add_z(first:BigInt,second:BigInt) -> BigInt {
+        return first
+    }
+
+    func p_add_n(first:BigInt,second:BigInt) -> BigInt {
+        var big = first
+        var small = second
+        var sign = Sign.positive
+        if first < second {
+            big = second
+            small = first
+            sign = Sign.negative
+        }
+        var result = diff(big: big, small: small)
+        result.sign = sign
+        return result
+    }
+    
+    func n_add_p(first:BigInt,second:BigInt) -> BigInt {
+        var big = first
+        var small = second
+        var sign = Sign.negative
+        if first < second {
+            big = second
+            small = first
+            sign = Sign.positive
+        }
+        var result = diff(big: big, small: small)
+        result.sign = sign
+        return result
+    }
+    
+    // 6 - 4 or 6 - 7
+    func p_substract_p(first:BigInt,second:BigInt) -> BigInt {
+        let ordered = order(first,second)
+        var result = diff(first:first,second:second)
+        result.sign = .negative
+        return result
+    }
+
+    // -6 - +4
+    func n_substract_p(first:BigInt,second:BigInt) -> BigInt {
+        var result = sum(first:first,second:second)
+        result.sign = .negative
+        return result
+    }
+    
+    
+    func order(_ first: BigInt, _ second: BigInt) -> (BigInt,BigInt,Bool?) {
+        if first > second {
+            return (first,second, false)
+        }
+        if second > first {
+            return (second, first, true)
+        }
+        return (first, first, .none)
     }
 }
