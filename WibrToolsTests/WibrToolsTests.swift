@@ -81,29 +81,48 @@ class WibrToolsTests: XCTestCase {
     func testBigInt() {
         let n:BigInt = "-9933893923746842983483838399337123128371329633456"
         print(n)
-        let m:BigInt = "382487367782920039376462636e81374382943174327688"
+        let m:BigInt =   "382487367782920039376462636e81374382943174327688"
         print(m)
         let sum = n + m
         print(sum)
-        
+    }
+    
+    func process(combi:(BigInt,BigInt,BigInt,BigInt)){
+        print("add: \(combi.0) + \(combi.1) = \(combi.0 + combi.1) - expected: \(combi.2)")
+        print("sub: \(combi.0) - \(combi.1) = \(combi.0 - combi.1) - expected: \(combi.3)")
     }
     
     func testSubtract() {
-        let n2:BigInt = 10000
-        let n1:BigInt = 9999
-        let diff = n1 - n2
-        print("\(n1) - \(n2) = \(diff)")
+        let p1 = BigInt(value:5)
+        let p1_ = BigInt(value:-5)
+        let p2 = BigInt(value:3)
+        let zero = BigInt(value:0)
+        let n1 = BigInt(value:-11)
+        let n1_ = BigInt(value:11)
+        let n2 = BigInt(value:-7)
         
-        print("\(n1 <> n2)")
+        let d2 = BigInt(value:2)
+        let d4_ = BigInt(value:-4)
+        let d6 = BigInt(value:-6)
+        let d8 = BigInt(value:8)
+        let b16 = BigInt(value:16)
+        let b16_ = BigInt(value:-16)
+        let d18_ = BigInt(value:-18)
         
-        for n in stride(from:-3,to:6,by:4){
-            let f = BigInt(value:n)
-            for m in stride(from: -7, to: 4, by: 5){
-                let s = BigInt(value:m)
-                print("\(f) + \(s) = \(f + s)")
-                print("\(f) - \(s) = \(f - s)")
-                
-            }
+        var combies = [(BigInt, BigInt, BigInt, BigInt)]()
+        combies.append((p1, n1, d6, b16))
+
+        combies.append((p1, p2, d8, d2))
+        combies.append((p1, zero, p1, p1))
+        combies.append((zero, p1, p1, p1_))
+        combies.append((zero, zero, zero, zero))
+        combies.append((zero, n1, n1, n1_))
+        combies.append((n1, p1, d6, b16_))
+        combies.append((n1, zero, n1, n1))
+        combies.append((n1, n2, d18_, d4_))
+    
+        for combi in combies {
+            process(combi: combi)
         }
     }
     
