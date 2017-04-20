@@ -16,7 +16,7 @@ public enum Sign : String {
         return value > 0 ? .positive : (value < 0 ? .negative : nil)
     }
     
-    func flip() -> Sign {
+    var opposite : Sign {
         switch self {
             case .positive : return .negative
             case .negative : return .positive
@@ -37,7 +37,7 @@ public struct BigInt : CustomStringConvertible {
         return values.count
     }
     
-    private var schemeIndex:Int {
+    fileprivate var schemeIndex:Int {
         if let s = self.sign {
             return s == .positive ? 0 : 2
         }
@@ -88,30 +88,24 @@ public struct BigInt : CustomStringConvertible {
         } while v > 0
     }
     
-    private init(){
+    fileprivate init(){
         self.values = [Int]()
         self.sign = .none
     }
     
     public mutating func negated() -> BigInt {
         if let s = self.sign {
-            self.sign = s.flip()
+            self.sign = s.opposite
         }
         return self
     }
     
     public func add(_ other:BigInt) -> BigInt {
-        let row = self.schemeIndex
-        let col = other.schemeIndex
-        let f = BigInt.Helper.getAddOperation(row,col)
-        return f(self,other)
+        return BigInt.Helper.getAddOperation(self.schemeIndex,other.schemeIndex)(self,other)
     }
     
     public func subtract(_ other: BigInt) -> BigInt {
-        let row = self.schemeIndex
-        let col = other.schemeIndex
-        let f = BigInt.Helper.getSubtractOperation(row,col)
-        return f(self, other)
+        return BigInt.Helper.getSubtractOperation(self.schemeIndex,other.schemeIndex)(self,other)
     }
     
     public var description: String {
@@ -138,6 +132,21 @@ extension BigInt : Comparable{
     }
     
     public func compare(_ other:BigInt) -> Int{
+        var result = compareSign(other)
+        if result == 0 {
+            result = compareValue(other)
+        }
+        return result
+    }
+    
+    fileprivate func compareSign(_ other:BigInt) -> Int {
+        // positive = 0, zero = 1, negative = 2 => positive = 1, zero = 0, negative = -1
+        let n0 = (self.schemeIndex - 1) * -1
+        let n1 = (other.schemeIndex - 1) * -1
+        return n0 - n1
+    }
+
+    fileprivate func compareValue(_ other:BigInt) -> Int{
         if self.values.count > other.values.count {
             return 1
         }
@@ -174,7 +183,6 @@ extension BigInt : Comparable{
     public static func == (lhs:BigInt, rhs:BigInt) -> Bool {
         return lhs.equals(rhs)
     }
-    
     
     public static func <> (lhs:BigInt, rhs:BigInt) -> Int {
         return lhs.compare(rhs)
@@ -218,23 +226,23 @@ struct BigIntHelper {
     
     init() {
         addScheme[0,0] = p_add_p
-        addScheme[0,1] = p_add_z
+        addScheme[0,1] = any_operation_z
         addScheme[0,2] = p_add_n
-        addScheme[1,0] = z_add_p
-        addScheme[1,1] = z_add_z
-        addScheme[1,2] = z_add_n
+        addScheme[1,0] = z_add_any
+        addScheme[1,1] = z_add_any
+        addScheme[1,2] = z_add_any
         addScheme[2,0] = n_add_p
-        addScheme[2,1] = n_add_z
+        addScheme[2,1] = any_operation_z
         addScheme[2,2] = n_add_n
         
         subtractScheme[0,0] = p_subtract_p
-        subtractScheme[0,1] = p_subtract_z
+        subtractScheme[0,1] = any_operation_z
         subtractScheme[0,2] = p_subtract_n
         subtractScheme[1,0] = z_subtract_p
         subtractScheme[1,1] = z_subtract_z
         subtractScheme[1,2] = z_subtract_n
         subtractScheme[2,0] = n_subtract_p
-        subtractScheme[2,1] = n_subtract_z
+        subtractScheme[2,1] = any_operation_z
         subtractScheme[2,2] = n_subtract_n
     }
     
@@ -247,33 +255,33 @@ struct BigIntHelper {
     }
     
     fileprivate func sum(first: BigInt, second:BigInt) -> BigInt {
-        var values = [Int]()
         var remainder = false
         var index = 0
         let count = first.length
+        var result = BigInt()
         for var num in second.values {
             if index < count {
                 num += first.values[index]
             }
             let next = addNum(num: num, remainder: &remainder)
-            values.append(next)
+            result.values.append(next)
             index += 1
         }
         if index < count {
             for i in index..<count {
                 let num = first.values[i]
                 let next = addNum(num: num, remainder: &remainder)
-                values.append(next)
+                result.values.append(next)
             }
         }
         if remainder {
-            values.append(1)
+            result.values.append(1)
         }
-        return BigInt(values:values)
+        return result
     }
     
     fileprivate func diff(big:BigInt, small: BigInt) -> BigInt {
-        var values = [Int]()
+        var result = BigInt()
         var borrow = false
         let smallLength = small.length
         var index = 0
@@ -291,7 +299,7 @@ struct BigIntHelper {
                 else {
                     borrow = false
                 }
-                values.append(nv)
+                result.values.append(nv)
             }
             else {
                 var nv = lval
@@ -302,14 +310,14 @@ struct BigIntHelper {
                     nv += 10
                     borrow = true
                 }
-                values.append(nv)
+                result.values.append(nv)
             }
             index += 1
         }
-        while let value = values.last, value == 0 {
-            values.removeLast()
+        while let value = result.values.last, value == 0 {
+            result.values.removeLast()
         }
-        return BigInt(values:values)
+        return result
     }
     
     private func addNum(num: Int, remainder:inout Bool) -> Int {
@@ -322,147 +330,112 @@ struct BigIntHelper {
         remainder = false
         return result
     }
-
     
     //    5 + 6 = +11
     func p_add_p(first:BigInt,second:BigInt) ->BigInt {
-        var result = sum(first:first,second:second)
-        result.sign = .positive
-        return result
+        return a_add_a(first: first, second: second, sign: .positive)
     }
     
     // -5 + -6 = -11
     func n_add_n(first:BigInt,second:BigInt) -> BigInt {
-        var result = sum(first:first,second:second)
-        result.sign = .negative
-        return result
-    }
-    // 0 + 5 = +5
-    func z_add_p(first:BigInt,second:BigInt) -> BigInt {
-        return second
-    }
-    // 0 + -5  = -5
-    func z_add_n(first:BigInt,second:BigInt) -> BigInt {
-        return second
-    }
-    // 0 + 0 = 0
-    func z_add_z(first:BigInt,second:BigInt) -> BigInt {
-        return second
+        return a_add_a(first: first, second: second, sign: .negative)
     }
     
-    // 0 + a = a
+    func a_add_a(first:BigInt,second:BigInt, sign:Sign) -> BigInt {
+        var result = sum(first:first,second:second)
+        result.sign = sign
+        return result
+    }
+    
+    // 0 +  5 = +5
+    // 0 + -5 = -5
+    // 0 +  0 =  0
+    
+    // 0 +  a = a
     func z_add_any(first:BigInt,second:BigInt) -> BigInt {
         return second
     }
     
     // -5 + 0 = -5
-    func n_add_z(first:BigInt,second:BigInt) -> BigInt {
-        return first
-    }
-    
-    // 5 + 0 = +5
-    func p_add_z(first:BigInt, second:BigInt) -> BigInt {
+    //  5 + 0 = +5
+    //  6 - 0 = +6
+    // -6 - 0 = -6
+    func any_operation_z(first:BigInt, second:BigInt) -> BigInt {
         return first
     }
 
     // 5 + -6 = -1  |  6 + -5 = +1
     func p_add_n(first:BigInt,second:BigInt) -> BigInt {
-        var sign = Sign.positive
-        let p = prepare(first, second)
-        if p.compareResult == -1 {
-            sign = Sign.negative
-        }
-        var result = diff(big: p.big, small: p.small)
-        result.sign = sign
-        return result
+        return a_diff_b(first: first, second: second, initial: .positive)
     }
-    
-    // -5 + 6 = +1 |  -6 + 5 = -1
-    func n_add_p(first:BigInt,second:BigInt) -> BigInt {
-        let p = prepare(first, second)
-        var sign = Sign.negative
-        if p.compareResult == -1 {
-            sign = Sign.positive
-        }
-        var result = diff(big: p.big, small: p.small)
-        result.sign = sign
-        return result
-    }
-    
+
     // 6 - 4 = +2  | 4 - 6 = -2
     func p_subtract_p(first:BigInt,second:BigInt) -> BigInt {
-        let p = prepare(first,second)
-        var sign = Sign.positive
-        if p.compareResult < 0 {
-            sign = Sign.negative
-        }
-        var result = diff(big:p.big, small:p.small)
-        result.sign = sign
-        return result
+        return a_diff_b(first: first, second: second, initial: .positive)
     }
 
-    // 8 - - 7  |
-    func p_subtract_n(first:BigInt,second:BigInt) -> BigInt {
-        var result = sum(first:first, second:second)
-        result.sign  = .positive
-        return result
-    }
-
-    // -6 - 4 = -10
-    func n_subtract_p(first:BigInt,second:BigInt) -> BigInt {
-        var result = sum(first:first,second:second)
-        result.sign = .negative
-        return result
+    // -5 + 6 = +1 |  -6 + 5 = -1
+    func n_add_p(first:BigInt,second:BigInt) -> BigInt {
+        return a_diff_b(first: first, second: second, initial: .negative)
     }
     
     // -5 - -8 = +3  | -8 - -5 = -3
     func n_subtract_n(first:BigInt, second:BigInt) -> BigInt {
+        return a_diff_b(first: first, second: second, initial: .negative)
+    }
+    
+    func a_diff_b(first:BigInt, second:BigInt, initial:Sign) -> BigInt {
+        var sign = initial
         let p = prepare(first, second)
-        var sign = Sign.negative
         if p.compareResult == -1 {
-            sign = Sign.positive
+            sign = sign.opposite
         }
         var result = diff(big:p.big, small:p.small)
         result.sign = sign
-        return first
+        return result
     }
 
-    // 6 - 0 = 6
-    func p_subtract_z(first:BigInt, second:BigInt) -> BigInt {
-        return first
+    //  6 - -4 = +10  |
+    func p_subtract_n(first:BigInt,second:BigInt) -> BigInt {
+        return a_sum_b(first: first, second: second, sign: .positive)
     }
 
-    // -6 - 0 = -6
-    func n_subtract_z(first:BigInt, second:BigInt) -> BigInt {
-        return first
+    // -6 - 4 = -10
+    func n_subtract_p(first:BigInt,second:BigInt) -> BigInt {
+        return a_sum_b(first: first, second: second, sign: .negative)
     }
-
+    
+    func a_sum_b(first:BigInt, second:BigInt, sign:Sign) -> BigInt {
+        var result = sum(first:first,second:second)
+        result.sign = sign
+        return result
+    }
+    
     // 0 - a = -a
     func z_subtract_p(first:BigInt, second:BigInt) -> BigInt {
-        var result = second
-        result.sign = .negative
-        return result
+        return z_subtract_any(first: first, second: second, sign: .negative)
+    }
+    // 0 - -a = +a
+    func z_subtract_n(first:BigInt, second:BigInt) -> BigInt {
+        return z_subtract_any(first: first, second: second, sign: .positive)
     }
     
     // 0 - 0 = 0
     func z_subtract_z(first:BigInt, second:BigInt) -> BigInt {
-        var result = first
-        result.sign = .none
-        return result
+        return z_subtract_any(first: first, second: second, sign: nil)
     }
 
-    // 0 - -a = +a
-    func z_subtract_n(first:BigInt, second:BigInt) -> BigInt {
+    private func z_subtract_any(first:BigInt, second:BigInt, sign:Sign?) -> BigInt {
         var result = second
-        result.sign = .positive
+        result.sign = sign
         return result
     }
     
     func prepare(_ first: BigInt, _ second: BigInt) -> (big:BigInt,small:BigInt,compareResult:Int) {
-        if first > second {
+        if first.compareValue(second) > 0 {
             return (first,second, 1)
         }
-        if second > first {
+        if second.compareValue(first) > 0 {
             return (second, first, -1)
         }
         return (first, first, 0)

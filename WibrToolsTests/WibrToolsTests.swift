@@ -111,7 +111,6 @@ class WibrToolsTests: XCTestCase {
         
         var combies = [(BigInt, BigInt, BigInt, BigInt)]()
         combies.append((p1, n1, d6, b16))
-
         combies.append((p1, p2, d8, d2))
         combies.append((p1, zero, p1, p1))
         combies.append((zero, p1, p1, p1_))
