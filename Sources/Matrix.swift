@@ -53,6 +53,20 @@ public enum Direction {
             case .west : return Cell(row: cell.row, column: cell.column - 1)
         }
     }
+    
+    public static func compassCard() -> [[Direction]] {
+        var directions = [[Direction]]()
+        directions.append([.north])
+        directions.append([.north, .east])
+        directions.append([.east])
+        directions.append([.south,.east])
+        directions.append([.south])
+        directions.append([.south, .west])
+        directions.append([.west])
+        directions.append([.north, .west])
+        return directions
+    }
+
 }
 
 public struct Matrix<T> : Sequence, CustomStringConvertible {
@@ -141,8 +155,8 @@ public struct Matrix<T> : Sequence, CustomStringConvertible {
     /**
      *
      */
-    public func getValues(cell:Cell, directions:[Direction], count:Int) -> [T]?{
-        var results = [T]()
+    public func getValues(cell:Cell, directions:[Direction], count:Int) -> [Cell]?{
+        var results = [Cell]()
         var current = cell
         for _ in 0..<count {
             for direction in directions {
@@ -151,9 +165,7 @@ public struct Matrix<T> : Sequence, CustomStringConvertible {
             if !self.contains(cell: current){
                 return nil
             }
-            if let value = self[current]{
-                results.append(value)
-            }
+            results.append(current)
         }
         return results
     }
