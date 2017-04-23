@@ -108,6 +108,34 @@ public struct BigInt : CustomStringConvertible {
         return BigInt.Helper.getSubtractOperation(self.schemeIndex,other.schemeIndex)(self,other)
     }
     
+    public func multiply(_ other: BigInt) -> BigInt {
+        var sum = BigInt()
+        var transfer = 0
+        var pw = 0
+        for var n in other.values {
+            var result = [Int]()
+            for _ in 0..<pw { result.append(0) }
+            for m in self.values {
+                n += transfer
+                let r = m * n
+                if r >= 10 {
+                    transfer = r / 10
+                    n = r % 10
+                }
+                else {
+                    transfer = 0
+                }
+                result.append(n)
+            }
+            if ( transfer > 0 ){
+                result.append(transfer)
+            }
+            sum = sum.add(BigInt(values: result))
+            pw += 1
+        }
+        return sum
+    }
+    
     public var description: String {
         let token = (self.sign == .none)  ? "" : self.sign!.rawValue
         return token + self.values.reversed().map({String.init(describing:$0)}).joined()

@@ -125,4 +125,11 @@ class WibrToolsTests: XCTestCase {
         }
     }
     
+    func testMultiply() {
+        let n = BigInt(value:34)
+        let m = BigInt(value:73)
+        let p = m.multiply(n)
+        print(p)
+    }
+    
 }
