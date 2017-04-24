@@ -126,9 +126,10 @@ class WibrToolsTests: XCTestCase {
     }
     
     func testMultiply() {
-        let n = BigInt(value:34)
-        let m = BigInt(value:73)
-        let p = m.multiply(n)
+        // 1,96035807e45
+        let n = BigInt(string:"23894294729437024383847843928940897724")
+        let m = BigInt(string:"8204293487293402340274289423478023742374074")
+        let p = n * m
         print(p)
     }
     

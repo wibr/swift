@@ -22,6 +22,7 @@ public enum Sign : String {
             case .negative : return .positive
         }
     }
+    
 }
 
 typealias BigIntOperation = ((BigInt,BigInt) -> BigInt)
@@ -93,6 +94,18 @@ public struct BigInt : CustomStringConvertible {
         self.sign = .none
     }
     
+    public static func Zero() -> BigInt {
+        return BigInt(value:0)
+    }
+    
+    public var isZero : Bool {
+        return self.values.count == 1 && self.values.first == 0 && self.sign == nil
+    }
+    
+    public var isOne : Bool {
+        return self.values.count == 1 && self.values.first == 1
+    }
+    
     public mutating func negated() -> BigInt {
         if let s = self.sign {
             self.sign = s.opposite
@@ -108,32 +121,23 @@ public struct BigInt : CustomStringConvertible {
         return BigInt.Helper.getSubtractOperation(self.schemeIndex,other.schemeIndex)(self,other)
     }
     
+    //   34
+    //   73
+    //  102
+    // 2380
+    // ────
+    // 2482
     public func multiply(_ other: BigInt) -> BigInt {
-        var sum = BigInt()
-        var transfer = 0
-        var pw = 0
-        for var n in other.values {
-            var result = [Int]()
-            for _ in 0..<pw { result.append(0) }
-            for m in self.values {
-                n += transfer
-                let r = m * n
-                if r >= 10 {
-                    transfer = r / 10
-                    n = r % 10
-                }
-                else {
-                    transfer = 0
-                }
-                result.append(n)
-            }
-            if ( transfer > 0 ){
-                result.append(transfer)
-            }
-            sum = sum.add(BigInt(values: result))
-            pw += 1
+        if self.isZero || other.isZero {
+            return BigInt.Zero()
         }
-        return sum
+        if self.isOne {
+            return other
+        }
+        if other.isOne {
+            return self
+        }
+        return BigInt.Helper.multiply(self, other)
     }
     
     public var description: String {
@@ -223,6 +227,10 @@ extension BigInt : Comparable{
     
     public static func > (lhs:BigInt, rhs:BigInt) -> Bool {
         return (lhs <> rhs) > 0
+    }
+    
+    public static func * (lhs:BigInt, rhs:BigInt) -> BigInt {
+        return lhs.multiply(rhs)
     }
     
 }
@@ -468,4 +476,47 @@ struct BigIntHelper {
         }
         return (first, first, 0)
     }
+    
+    func multiply(_ first: BigInt, _ second: BigInt) -> BigInt {
+        var tot = BigInt(value:0)
+        var pw = 0
+        for n in second.values {
+            var result = [Int]()
+            var transfer = 0
+            for _ in 0..<pw { result.append(0) }
+            for m in first.values {
+                var p = m * n
+                p += transfer
+                if p >= 10 {
+                    transfer = p / 10
+                    p = p % 10
+                }
+                else {
+                    transfer = 0
+                }
+                result.append(p)
+            }
+            if ( transfer > 0 ){
+                result.append(transfer)
+            }
+            var bi = BigInt()
+            bi.values = result
+            bi.sign = .positive
+            tot = self.sum(first: tot, second: bi)
+            pw += 1
+        }
+        tot.sign = multiplySign(first: first.sign, second: second.sign)
+        return tot
+    }
+    
+    private func multiplySign(first: Sign?, second:Sign?) -> Sign? {
+        if first == nil || second == nil {
+            return nil
+        }
+        if let f = first, let s = second {
+            return f == s ? Sign.positive : Sign.negative
+        }
+        return nil
+    }
+
 }
