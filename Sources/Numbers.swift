@@ -112,6 +112,10 @@ public struct BigInt : CustomStringConvertible {
         return self
     }
     
+    public var digits: [Int]{
+        return self.values.reversed()
+    }
+    
     public var intValue: Int? {
         return toInt()
     }
