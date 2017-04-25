@@ -291,31 +291,37 @@ struct BigIntHelper {
     }
     
     fileprivate func sum(first: BigInt, second:BigInt) -> BigInt {
+        var bi = BigInt()
+        bi.values = _sum(first:first.values, second:second.values)
+        return bi
+    }
+
+    fileprivate func _sum(first: [Int], second:[Int]) -> [Int] {
         var remainder = false
         var index = 0
-        let count = first.length
-        var result = BigInt()
-        for var num in second.values {
+        let count = first.count
+        var result = [Int]()
+        for var num in second {
             if index < count {
-                num += first.values[index]
+                num += first[index]
             }
             let next = addNum(num: num, remainder: &remainder)
-            result.values.append(next)
+            result.append(next)
             index += 1
         }
         if index < count {
             for i in index..<count {
-                let num = first.values[i]
+                let num = first[i]
                 let next = addNum(num: num, remainder: &remainder)
-                result.values.append(next)
+                result.append(next)
             }
         }
         if remainder {
-            result.values.append(1)
+            result.append(1)
         }
         return result
     }
-    
+
     fileprivate func diff(big:BigInt, small: BigInt) -> BigInt {
         var result = BigInt()
         var borrow = false
@@ -478,12 +484,12 @@ struct BigIntHelper {
     }
     
     func multiply(_ first: BigInt, _ second: BigInt) -> BigInt {
-        var tot = BigInt(value:0)
+        var accumulated = [Int]()
         var pw = 0
         for n in second.values {
-            var result = [Int]()
+            var intermediate = [Int]()
             var transfer = 0
-            for _ in 0..<pw { result.append(0) }
+            for _ in 0..<pw { intermediate.append(0) }
             for m in first.values {
                 var p = m * n
                 p += transfer
@@ -494,19 +500,18 @@ struct BigIntHelper {
                 else {
                     transfer = 0
                 }
-                result.append(p)
+                intermediate.append(p)
             }
             if ( transfer > 0 ){
-                result.append(transfer)
+                intermediate.append(transfer)
             }
-            var bi = BigInt()
-            bi.values = result
-            bi.sign = .positive
-            tot = self.sum(first: tot, second: bi)
+            accumulated = self._sum(first: accumulated, second: intermediate)
             pw += 1
         }
-        tot.sign = multiplySign(first: first.sign, second: second.sign)
-        return tot
+        var res = BigInt()
+        res.values = accumulated
+        res.sign = multiplySign(first: first.sign, second: second.sign)
+        return res
     }
     
     private func multiplySign(first: Sign?, second:Sign?) -> Sign? {
