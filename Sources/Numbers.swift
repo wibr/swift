@@ -22,7 +22,6 @@ public enum Sign : String {
             case .negative : return .positive
         }
     }
-    
 }
 
 typealias BigIntOperation = ((BigInt,BigInt) -> BigInt)
@@ -113,6 +112,26 @@ public struct BigInt : CustomStringConvertible {
         return self
     }
     
+    public var intValue: Int? {
+        return toInt()
+    }
+    
+    private func toInt() -> Int? {
+        var s = 0
+        var p = 1
+        for (i,d) in self.values.enumerated() {
+            s += (p * d)
+            p *= 10
+            if i >= BigInt.Helper.maxIntPower {
+                return nil
+            }
+        }
+        if let sgn = self.sign {
+            return sgn == .negative ? -s : s
+        }
+        return s
+    }
+
     public func add(_ other:BigInt) -> BigInt {
         return BigInt.Helper.getAddOperation(self.schemeIndex,other.schemeIndex)(self,other)
     }
@@ -121,17 +140,6 @@ public struct BigInt : CustomStringConvertible {
         return BigInt.Helper.getSubtractOperation(self.schemeIndex,other.schemeIndex)(self,other)
     }
     
-    public var intValue: Int? {
-        let str = self.values.reversed().reduce(""){$0+String($1)}
-        return Int(str)
-    }
-    
-    //   34
-    //   73
-    //  102
-    // 2380
-    // ────
-    // 2482
     public func multiply(_ other: BigInt) -> BigInt {
         if self.isZero || other.isZero {
             return BigInt.Zero()
@@ -264,7 +272,8 @@ struct BigIntHelper {
     
     var addScheme = Matrix<BigIntOperation>(rows:3, columns:3)
     var subtractScheme = Matrix<BigIntOperation>(rows:3, columns:3)
-    
+    let maxIntPower = String(Int.max).characters.count - 1
+
     init() {
         addScheme[0,0] = p_add_p
         addScheme[0,1] = any_operation_z
@@ -327,14 +336,20 @@ struct BigIntHelper {
         return result
     }
 
-    fileprivate func diff(big:BigInt, small: BigInt) -> BigInt {
+    private func diff(big:BigInt, small: BigInt) -> BigInt {
         var result = BigInt()
+        result.values = _diff(big: big.values, small: small.values)
+        return result
+    }
+
+    private func _diff(big:[Int], small: [Int]) -> [Int] {
+        var result = [Int]()
         var borrow = false
-        let smallLength = small.length
+        let smallLength = small.count
         var index = 0
-        for var lval in big.values {
+        for var lval in big {
             if index < smallLength {
-                let sval = small.values[index]
+                let sval = small[index]
                 if borrow {
                     lval -= 1
                 }
@@ -346,7 +361,7 @@ struct BigIntHelper {
                 else {
                     borrow = false
                 }
-                result.values.append(nv)
+                result.append(nv)
             }
             else {
                 var nv = lval
@@ -357,16 +372,16 @@ struct BigIntHelper {
                     nv += 10
                     borrow = true
                 }
-                result.values.append(nv)
+                result.append(nv)
             }
             index += 1
         }
-        while let value = result.values.last, value == 0 {
-            result.values.removeLast()
+        while let value = result.last, value == 0 {
+            result.removeLast()
         }
         return result
     }
-    
+
     private func addNum(num: Int, remainder:inout Bool) -> Int {
         var result = num
         if remainder { result += 1 }
@@ -488,7 +503,7 @@ struct BigIntHelper {
         return (first, first, 0)
     }
     
-    func multiply(_ first: BigInt, _ second: BigInt) -> BigInt {
+    fileprivate func multiply(_ first: BigInt, _ second: BigInt) -> BigInt {
         var accumulated = [Int]()
         var pw = 0
         for n in second.values {
