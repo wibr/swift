@@ -126,11 +126,20 @@ class WibrToolsTests: XCTestCase {
     }
     
     func testMultiply() {
-        // 1,96035807e45
-        let n = BigInt(string:"23894294729437024383847843928940897724")
-        let m = BigInt(string:"8204293487293402340274289423478023742374074")
+        //119 * 473 =
+        let first = 13419
+        let second = 45763
+        let expected = first * second
+        let n = BigInt(value:first)
+        let m = BigInt(value:second)
         let p = n * m
-        print(p)
+        if let i = p.intValue {
+            XCTAssert(i == expected)
+        }
+        else {
+            XCTFail("Unable to convert \(p) to Int")
+        }
+        
     }
     
 }

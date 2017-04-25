@@ -121,6 +121,11 @@ public struct BigInt : CustomStringConvertible {
         return BigInt.Helper.getSubtractOperation(self.schemeIndex,other.schemeIndex)(self,other)
     }
     
+    public var intValue: Int? {
+        let str = self.values.reversed().reduce(""){$0+String($1)}
+        return Int(str)
+    }
+    
     //   34
     //   73
     //  102
