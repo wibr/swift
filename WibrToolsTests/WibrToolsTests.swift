@@ -125,6 +125,12 @@ class WibrToolsTests: XCTestCase {
         }
     }
     
+    func testFactorize(){
+        let n = 738746463
+        let factors = Math.factorize(n: n)
+        print(factors)
+    }
+    
     func testMultiply() {
         //119 * 473 =
         let first = 13419
@@ -141,5 +147,11 @@ class WibrToolsTests: XCTestCase {
         }
         
     }
-    
+ 
+    func testKarasuba() {
+        let a = 12345
+        let b = 6789
+        let c = Math.karatsuba(num1: a, num2: b)
+        print ( c)
+    }
 }
