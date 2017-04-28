@@ -129,17 +129,20 @@ public struct Math {
         if ( n == 1 ){
             return factors
         }
-        if n == 2 {
-            factors.append(2)
-            return factors
-        }
-        let end = Int(sqrt(Double(n)))
+        let end = Int(sqrt(Double(n)).rounded(.up))
         var current = n
-        current = testFactor(num:current, divisor:2, factors:&factors)
-        var i = 3
-        while current > 1 && i <= end {
-            current = testFactor(num:current, divisor:i, factors:&factors)
-            i += 2
+        var index = 0
+        var p = Primes.First_100[index]
+        let k = Primes.First_100.count
+        while current > 1 && p <= end {
+            current = testFactor(num:current, divisor:p, factors:&factors)
+            if index < k {
+                p = Primes.First_100[index]
+                index += 1
+            }
+            else {
+                p += 2
+            }
         }
         return factors
     }

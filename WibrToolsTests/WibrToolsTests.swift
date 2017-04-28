@@ -35,9 +35,9 @@ class WibrToolsTests: XCTestCase {
     }
     
     func testPrimesGenerator() {
-        for prime in Primes() {
+        for (i,prime) in Primes().enumerated() {
             print(prime)
-            if prime > 100 {
+            if i > 100 {
                 return
             }
         }
@@ -126,6 +126,9 @@ class WibrToolsTests: XCTestCase {
     }
     
     func testFactorize(){
+        let f = 2
+        let factors2 = Math.factorize(n: f)
+        XCTAssert(factors2.first! == 2)
         let n = 738746463
         let factors = Math.factorize(n: n)
         print(factors)
