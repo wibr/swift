@@ -126,7 +126,7 @@ public struct Math {
     
     public static func factorize(n:Int) -> [Int] {
         var factors = [Int]()
-        if ( n == 1 ){
+        if n == 1 {
             return factors
         }
         let end = Int(sqrt(Double(n)).rounded(.up))
@@ -143,6 +143,9 @@ public struct Math {
             else {
                 p += 2
             }
+        }
+        if current > 1 {
+            factors.append(current)
         }
         return factors
     }
