@@ -52,6 +52,11 @@ class WibrToolsTests: XCTestCase {
         }
     }
     
+    func testStrings() {
+        let s = "kdhfie732k"
+        _ = Strings.longestRepeatingSequence(value:s)
+    }
+    
     func testMatrix() {
         let rows = 3
         let columns = 4

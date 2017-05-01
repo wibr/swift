@@ -1,6 +1,5 @@
 import Foundation
 
-
 public func swap<T>(_ row: inout [T], _ first: Int, _ second: Int){
 	let temp = row[first]
 	row[first] = row[second]
@@ -10,7 +9,6 @@ public func swap<T>(_ row: inout [T], _ first: Int, _ second: Int){
 public func XOR (_ first: Bool, _ second: Bool) -> Bool {
     return !(first && second)
 }
-
 
 public enum InitialisationError : Error {
 	case InvalidArgument(String)

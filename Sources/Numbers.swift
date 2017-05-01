@@ -26,6 +26,10 @@ public enum Sign : String {
 
 public struct BigFibonacciSequence : Sequence {
     
+    public init() {
+        
+    }
+    
     public func makeIterator() -> BigFibonacci {
         return BigFibonacci()
     }
@@ -48,9 +52,10 @@ public struct BigInt : CustomStringConvertible {
     static var Helper = BigIntHelper()
     
     fileprivate var values:[Int]
-    var sign:Sign?
     
-    var length: Int {
+    public var sign:Sign?
+    
+    public var length: Int {
         return values.count
     }
     
