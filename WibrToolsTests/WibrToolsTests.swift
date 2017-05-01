@@ -43,6 +43,15 @@ class WibrToolsTests: XCTestCase {
         }
     }
     
+    func testFibonaci() {
+        for (i,num) in BigFibonacciSequence().enumerated() {
+            print("\(i+1) - \(num)")
+            if num.length > 30 {
+                return
+            }
+        }
+    }
+    
     func testMatrix() {
         let rows = 3
         let columns = 4
@@ -151,10 +160,10 @@ class WibrToolsTests: XCTestCase {
         
     }
  
-    func testKarasuba() {
-        let a = 12345
-        let b = 6789
-        let c = Math.karatsuba(num1: a, num2: b)
-        print ( c)
-    }
+//    func testKarasuba() {
+//        let a = 12345
+//        let b = 6789
+//        let c = Math.karatsuba(num1: a, num2: b)
+//        print ( c)
+//    }
 }

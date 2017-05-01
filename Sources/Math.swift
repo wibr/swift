@@ -22,6 +22,22 @@ public enum MathConstant : Double {
     case Sqrt3 = 1.732050807568877293527446341505
 }
 
+public struct FibonaciSequence : Sequence {
+    public func makeIterator() -> FibonaciIterator {
+        return FibonaciIterator()
+    }
+}
+
+public struct FibonaciIterator : IteratorProtocol {
+    var state = (1,1)
+    
+    public mutating func next() -> Int? {
+        let upcoming = state.0
+        state = (state.1, state.0 + state.1)
+        return upcoming
+    }
+}
+
 public struct Math {
     public static func power(base:Int, exponent:Int) -> Double {
         return pow(Double(base),Double(exponent))

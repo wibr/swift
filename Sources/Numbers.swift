@@ -24,6 +24,23 @@ public enum Sign : String {
     }
 }
 
+public struct BigFibonacciSequence : Sequence {
+    
+    public func makeIterator() -> BigFibonacci {
+        return BigFibonacci()
+    }
+}
+
+public struct BigFibonacci :IteratorProtocol {
+    var state = (BigInt(value:1), BigInt(value:1))
+    
+    public mutating func next() -> BigInt? {
+        let upcoming = state.0
+        state = (state.1, state.0 + state.1)
+        return upcoming
+    }
+}
+
 typealias BigIntOperation = ((BigInt,BigInt) -> BigInt)
 
 public struct BigInt : CustomStringConvertible {
