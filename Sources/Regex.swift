@@ -22,6 +22,14 @@ extension Regex {
         if regexp.characters.first == "^" {
             return Regex.matchHere(regexp:regexp.characters.dropFirst(), text:text.characters)
         }
+        let idx = text.startIndex
+        while true {
+            if Regex.matchHere(regexp: regexp.characters, text: text.characters.suffix(from:idx)) {
+                return true
+            }
+            guard idx != text.endIndex else { break }
+            text.characters.formIndex(after: &idx)
+        }
         return false
     }
 }
