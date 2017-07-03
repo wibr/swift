@@ -27,7 +27,7 @@ public extension Array {
 
 public extension SignedInteger{
     static func arc4random_uniform(_ upper_bound: Self) -> Self{
-        precondition(upper_bound > 0 && upper_bound.toIntMax() < UInt32.max.toIntMax(),"arc4random_uniform only callable up to \(UInt32.max)")
+        precondition(upper_bound > 0 && Int(upper_bound) < Int(UInt32.max),"arc4random_uniform only callable up to \(UInt32.max)")
         return numericCast(Darwin.arc4random_uniform(numericCast(upper_bound)))
     }
 }
@@ -41,7 +41,7 @@ extension MutableCollection where Self:RandomAccessCollection {
             let randomDistance = IndexDistance.arc4random_uniform(dist)
             let j = index(i, offsetBy: randomDistance)
             guard i != j else {continue}
-            swap(&self[i], &self[j])
+            self.swapAt(i, j)
             formIndex(after:&i)
         }
     }

@@ -87,7 +87,7 @@ public struct BigInt : CustomStringConvertible {
         var sgn:Sign?
         if let idx = s.characters.index(of:"-"), idx == s.startIndex {
             let fromIndex = s.characters.index(after: idx)
-            s = s[fromIndex ..< s.endIndex]
+            s = String(s[fromIndex ..< s.endIndex])
             sgn = .negative
         }
         let array = s.characters.flatMap{Int(String($0))}
