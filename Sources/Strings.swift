@@ -15,23 +15,22 @@ public struct Strings {
         "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
         "0","1","2","3","4","5","6","7","8","9"]
 
-    public static func longestRepeatingSequence(value:String) -> String {
+    public static func longestRepeatingSequence(value:String,f:(Character) -> ()) {
         var idx = value.startIndex
         while idx < value.endIndex {
             let s = value[idx]
-            print(s)
+            f(s)
             idx = value.index(after: idx)
         }
-        return ""
     }
     
     
     public static func randomString(length: Int) -> String {
         let len = UInt32(Strings.AlphaNumerics.count)
-        var randomString = ""
+        var randomString = String()
         for _ in 0 ..< length {
             let rand = arc4random_uniform(len)
-            randomString += Strings.AlphaNumerics[Int(rand)]
+            randomString.append(Strings.AlphaNumerics[Int(rand)])
         }
         return randomString
     }

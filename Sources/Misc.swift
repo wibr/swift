@@ -54,3 +54,43 @@ extension Sequence {
         return clone
     }
 }
+
+extension String {
+    fileprivate var skipTable: [Character:Int ] {
+        var skipTable:[Character:Int] = [:]
+        for (i,c) in enumerated(){
+            skipTable[c] = count - i - 1
+        }
+        return skipTable
+    }
+    
+    fileprivate func match(from currentIndex: Index, with pattern: String) -> Index? {
+        guard currentIndex >= startIndex && currentIndex < endIndex && pattern.last == self[currentIndex]
+            else { return nil }
+        if pattern.count == 1 && self[currentIndex] == pattern.last { return currentIndex }
+        return match(from: index(before: currentIndex), with: "\(pattern.dropLast())")
+    }
+    
+    public func index(of pattern: String) -> Index? {
+        // 1
+        let patternLength = pattern.count
+        guard patternLength > 0, patternLength <= count else { return nil }
+        
+        // 2
+        let skipTable = pattern.skipTable
+        let lastChar = pattern.last!
+        
+        // 3
+        var i = index(startIndex, offsetBy: patternLength - 1)
+        while i < endIndex {
+            let c = self[i]
+            if c == lastChar {
+                if let k = match(from: i, with: pattern) { return k }
+                i = index(after: i)
+            } else {
+                i = index(i, offsetBy: skipTable[c] ?? patternLength, limitedBy: endIndex) ?? endIndex
+            }
+        }
+        return i
+    }
+}

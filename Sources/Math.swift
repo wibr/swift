@@ -105,7 +105,6 @@ public struct Math {
         return (r1, r2)
     }
     
-    
     public static func karatsuba(num1:Int, num2:Int) -> Int{
         if (num1 < 10) || (num2 < 10){
             return num1 * num2

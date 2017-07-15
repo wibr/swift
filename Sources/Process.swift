@@ -154,6 +154,10 @@ public struct CLI {
     
     public func processArgs() -> [String:SimpleType] {
         let args = CommandLine.arguments
+        return processArgs(args: args)
+    }
+    
+    public func processArgs(args:[String]) -> [String:SimpleType]{
         var values = [String:SimpleType]()
         var index = 1
         let count = args.count
@@ -162,13 +166,12 @@ public struct CLI {
             let first = arg.startIndex
             let char = arg[first]
             if char == "-" {
-                let key = arg[arg.index(arg.startIndex, offsetBy:1)..<arg.endIndex]
+                let key = arg.substring(from: arg.index(first, offsetBy: 1))
                 if (index + 1 >= count ){
                     values[key] = .NULL
                     break
                 }
-                let nextArg = args[index + 1]
-                let val = nextArg[nextArg.startIndex..<nextArg.endIndex]
+                let val = args[index + 1]
                 if (val == "-") {
                     values[key] = .NULL
                 }

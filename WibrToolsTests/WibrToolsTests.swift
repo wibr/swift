@@ -52,9 +52,19 @@ class WibrToolsTests: XCTestCase {
         }
     }
     
-    func testStrings() {
+    func _testStrings() {
         let s = "kdhfie732k"
-        _ = Strings.longestRepeatingSequence(value:s)
+        
+        _ = Strings.longestRepeatingSequence(value: s, f: { (p) in
+            print(p)
+        })
+    }
+    
+    func testSearchString() {
+        let s = "some string to find a pattern in"
+        let toFind = "find";
+        let index = s.index(of: toFind)
+        XCTAssert( index != nil )
     }
     
     func testMatrix() {
