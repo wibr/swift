@@ -39,4 +39,15 @@ class WibrToolsTests: XCTestCase {
         XCTAssertTrue(actualSum == expectedSum)
     }
     
+    func testBigIntPower() {
+        var numbers = Set<BigInt>()
+        for a in 2...5 {
+            for b in 2...5 {
+                numbers.insert(BigInt(int:a).power(b))
+            }
+        }
+        for number in numbers.sorted() {
+            print(number)
+        }
+    }
 }

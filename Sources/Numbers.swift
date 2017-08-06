@@ -36,7 +36,7 @@ public struct BigFibonacciSequence : Sequence {
 }
 
 public struct BigFibonacci :IteratorProtocol {
-    var state = (BigInt(value:1), BigInt(value:1))
+    var state = (BigInt(int:1), BigInt(int:1))
     
     public mutating func next() -> BigInt? {
         let upcoming = state.0
@@ -100,10 +100,10 @@ public struct BigInt : CustomStringConvertible {
         self.init(values:array, sign:sgn)
     }
     
-    public init(value:Int){
+    public init(int:Int){
         self.values = [Int]()
-        self.sign = Sign.from(value: value)
-        var v = abs(value)
+        self.sign = Sign.from(value: int)
+        var v = abs(int)
         repeat {
             self.values.append(v % 10)
             v = v / 10
@@ -116,7 +116,7 @@ public struct BigInt : CustomStringConvertible {
     }
     
     public static func Zero() -> BigInt {
-        return BigInt(value:0)
+        return BigInt(int:0)
     }
     
     public var isZero : Bool {
@@ -156,6 +156,21 @@ public struct BigInt : CustomStringConvertible {
             return sgn == .negative ? -s : s
         }
         return s
+    }
+    
+    public func power(_ value:Int) -> BigInt {
+        assert(value >= 0, "Power cannot be negative")
+        if value == 0 {
+            return BigInt(int:1)
+        }
+        if value == 1 {
+            return self
+        }
+        var result = self
+        for _ in 2...value {
+            result = result * self
+        }
+        return result
     }
 
     public func add(_ other:BigInt) -> BigInt {
@@ -271,7 +286,12 @@ extension BigInt : Comparable{
     public static func * (lhs:BigInt, rhs:BigInt) -> BigInt {
         return lhs.multiply(rhs)
     }
-    
+}
+
+extension BigInt : Hashable {
+    public var hashValue: Int {
+        return self.description.hashValue
+    }
 }
 
 extension BigInt : ExpressibleByStringLiteral {
@@ -290,7 +310,7 @@ extension BigInt : ExpressibleByStringLiteral {
 
 extension BigInt : ExpressibleByIntegerLiteral {
     public init(integerLiteral value: Int){
-        self = BigInt(value:value)
+        self = BigInt(int:value)
     }
 }
 
