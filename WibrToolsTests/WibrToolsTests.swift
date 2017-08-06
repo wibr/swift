@@ -20,11 +20,11 @@ class WibrToolsTests: XCTestCase {
     }
     
     func testUlamSpiralPosition() {
-        let ulam = Spiral.Ulam()
+        let ulam = UlamSpiral()
         let number = 888
         let expectedPosition = (ring:31, x:-2, y:15)
         let calculatedPosition = ulam.calculatePosition(num: number)
-        let corner  = Spiral.Ulam.isCorner((calculatedPosition.x,calculatedPosition.y))
+        let corner  = UlamSpiral.isCorner((calculatedPosition.x,calculatedPosition.y))
         XCTAssertFalse(corner)
         XCTAssertEqual(calculatedPosition.ring, expectedPosition.ring)
         XCTAssertEqual(calculatedPosition.x, expectedPosition.x)
@@ -32,13 +32,11 @@ class WibrToolsTests: XCTestCase {
     }
     
     func testUlamSumOfCorners() {
-        let size = 1001
+        let size = 5
         let nums = size * size
         let expectedSum = 101
-        let actualSum = Spiral.UlamSequence().prefix(nums).filter{ abs($0.x) == abs($0.y) }.reduce(0) { $0 + $1.num }
-        print(actualSum)
-//        XCTAssertTrue(actualSum == expectedSum)
-        
+        let actualSum = UlamSpiral().prefix(nums).filter{ abs($0.x) == abs($0.y) }.reduce(0) { $0 + $1.num }
+        XCTAssertTrue(actualSum == expectedSum)
     }
     
 }
