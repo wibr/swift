@@ -10,6 +10,9 @@ import Foundation
 public struct UlamSpiral {
     public typealias PositionInRing = (ring:Int, x:Int, y: Int)
     
+    public init() {
+    }
+    
     public func calcRing(_ num: Int ) -> Int {
         let root = sqrt(Double(num))
         var b = root.rounded(.down)
