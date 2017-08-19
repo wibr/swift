@@ -49,6 +49,7 @@ typealias BigIntOperation = ((BigInt,BigInt) -> BigInt)
 
 public struct BigInt : CustomStringConvertible {
     
+    public static var SmartSign = true
     static var Helper = BigIntHelper()
     
     fileprivate var values:[Int]
@@ -195,7 +196,12 @@ public struct BigInt : CustomStringConvertible {
     }
     
     public var description: String {
-        let token = (self.sign == .none)  ? "" : self.sign!.rawValue
+        var token = ""
+        if let sg = self.sign   {
+            if !(sg == .positive && BigInt.SmartSign) {
+                token = sg.rawValue
+            }
+        }
         return token + self.values.reversed().map({String.init(describing:$0)}).joined()
     }
 }

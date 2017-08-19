@@ -166,7 +166,8 @@ public struct CLI {
             let first = arg.startIndex
             let char = arg[first]
             if char == "-" {
-                let key = arg.substring(from: arg.index(first, offsetBy: 1))
+                let next = arg.index(first, offsetBy:1)
+                let key = String(arg[next...])
                 if (index + 1 >= count ){
                     values[key] = .NULL
                     break

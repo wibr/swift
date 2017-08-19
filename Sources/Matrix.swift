@@ -45,6 +45,21 @@ public enum Direction {
         return self
     }
     
+    public static func forCoordinates(x:Int, y:Int) -> [Direction]{
+        switch(x,y){
+            case( x,  0) : return [.east]
+            case(-x,  0) : return [.west]
+            case( 0,  y) : return [.south]
+            case( 0, -y) : return [.north]
+            case( x,  y) : return [.east, .south]
+            case(-x,  y) : return [.west, .south]
+            case( x, -y) : return [.east, .north]
+            case(-x, -y) : return [.west, .north]
+        default :
+            return [Direction]()
+        }
+    }
+    
     public func move(cell:Cell) -> Cell {
         switch self {
             case .north : return Cell(row:cell.row - 1 , column:cell.column)
