@@ -50,4 +50,11 @@ class WibrToolsTests: XCTestCase {
             print(number)
         }
     }
+    
+    func testBase10() {
+        let a10 = 345
+        let a2 = Math.toBase(number: a10, base: 2)
+        let b10 = Math.fromBase(number: a2, base: 2)
+        XCTAssert(b10 == a10)
+    }
 }

@@ -128,7 +128,32 @@ public struct Math {
         let low = n % divisor
         return (high:high*divisor, low:low)
     }
+    public static func getDigits(number:Int) -> [Int] {
+        return toBase(number: number, base: 10)
+    }
+    /**
+     Converts a 10-base number to a value represended in the given base
+     */
+    public static func toBase(number:Int, base:Int = 2) -> [Int] {
+        var values = [Int]()
+        var v = number
+        repeat {
+            values.insert(v % base, at: 0)
+            v = v / base
+        } while v > 0
+        return values
+    }
     
+    public static func fromBase(number:[Int], base:Int) -> Int {
+        var s = 0
+        var p = 1
+        for index in stride(from: number.count, to: 0, by: -1){
+            s += (p * number[index-1])
+            p *= base
+        }
+        return s
+    }
+
     public static func size(n:Int, base:Int = 10) -> Int {
         var p = 0
         var k = n

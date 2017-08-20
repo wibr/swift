@@ -167,6 +167,24 @@ public class Samples : SampleGenerator {
 	}
 }
 
+public struct Rotations {
+    var values = [[Int]]()
+    
+    public init(count:Int){
+        for i in 0..<count {
+            var seq = [Int]()
+            for j in 0..<count {
+                let index = (i + j) % count
+                seq.append(index)
+            }
+            values.append(seq)
+        }
+    }
+    
+    public var get : [[Int]] {
+        return values
+    }
+}
 
 private class Collector : SampleListener {
 	var indices = [[Int]]()
