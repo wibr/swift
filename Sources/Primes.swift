@@ -23,7 +23,7 @@ public struct Primes : Sequence {
     /*:
      Returns a prime iterator with 'max' primes pre generated
      */
-    public func atkinIterator(max:Int) -> PrimesAtkinIterator {
+    public func atkinSequence(max:Int) -> PrimesAtkinIterator {
         return PrimesAtkinIterator(max:max)
     }
     
@@ -124,14 +124,19 @@ public struct Primes : Sequence {
 public struct PrimesAtkinIterator : IteratorProtocol {
     let values:[Int]
     var currentIndex:Int
+    let maxSize:Int
     
     init(max:Int){
         let primes = Primes()
         self.values = primes.sieveOfAtkin(max: max)
         self.currentIndex = 0
+        self.maxSize = self.values.count
     }
     
     public mutating func next() -> Int?{
+        guard self.currentIndex < self.maxSize else {
+            return nil
+        }
         let value = values[currentIndex]
         currentIndex += 1
         return value
