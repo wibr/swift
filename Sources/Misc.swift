@@ -15,6 +15,12 @@ public enum InitialisationError : Error {
 	case MissingArgument(String)
 }
 
+public extension Bool {
+    func xor(_ other:Bool) -> Bool {
+        return XOR(self, other)
+    }
+}
+
 public extension Array {
     mutating func shuffle () {
         for i in (0..<self.count).reversed() {

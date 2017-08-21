@@ -57,4 +57,10 @@ class WibrToolsTests: XCTestCase {
         let b10 = Math.fromBase(number: a2, base: 2)
         XCTAssert(b10 == a10)
     }
+    
+    func testSieveOfAtkin(){
+        let primes = Primes()
+        let results = primes.sieveOfAtkin(max: 100000)
+        print(results)
+    }
 }
