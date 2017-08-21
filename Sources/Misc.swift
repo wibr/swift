@@ -62,6 +62,12 @@ extension Sequence {
 }
 
 extension String {
+    public func wordValue(offset:Int = 64) -> Int {
+        return self.unicodeScalars.reduce(0) {$0 + (Int($1.value) - offset)}
+    }
+}
+
+extension String {
     fileprivate var skipTable: [Character:Int ] {
         var skipTable:[Character:Int] = [:]
         for (i,c) in enumerated(){
