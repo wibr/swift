@@ -63,4 +63,11 @@ class WibrToolsTests: XCTestCase {
         let results = primes.sieveOfAtkin(max: 100000)
         print(results)
     }
+    
+    func testFileWalker(){
+        let walker = FileWalker(rootDir: ".")
+        walker.collecFiles(all:true) { (name, type) in
+            print("\(type) : \(name)")
+        }
+    }
 }
