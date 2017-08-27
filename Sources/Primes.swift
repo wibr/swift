@@ -23,7 +23,7 @@ public struct Primes : Sequence {
     /*:
      Returns a prime iterator with 'max' primes pre generated
      */
-    public func atkinSequence(max:Int) -> PrimesAtkinIterator {
+    public func atkinIterator(max:Int) -> PrimesAtkinIterator {
         return PrimesAtkinIterator(max:max)
     }
     
