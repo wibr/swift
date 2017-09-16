@@ -84,7 +84,7 @@ public enum Direction {
 
 }
 
-public struct Matrix<T> : Sequence, CustomStringConvertible {
+public struct Matrix<T> : CustomStringConvertible {
     var grid = [[T?]]()
     
     public init(rows:Int, columns:Int){
@@ -209,6 +209,9 @@ public struct Matrix<T> : Sequence, CustomStringConvertible {
         return result
     }
     
+}
+
+extension Matrix : Sequence {
     public func makeIterator() -> MatrixIterator {
         return MatrixIterator(matrix:self)
     }
@@ -247,5 +250,33 @@ public struct Matrix<T> : Sequence, CustomStringConvertible {
             }
             return cell
         }
+    }
+}
+extension Matrix where T == Double {
+
+    public func product(matrix:Matrix) -> Matrix {
+        let rows = Swift.max(self.rowSize, matrix.rowSize)
+        let cols = Swift.max(self.columnSize, matrix.columnSize)
+        var mat = Matrix(rows:rows, columns:cols)
+        for row in 0..<self.rowSize {
+            for col in 0..<matrix.columnSize {
+                mat[row,col] = sum(firstMatrix: self, firstRow: row, secondMatrix: matrix, secondCol: col)
+            }
+        }
+        return mat
+    }
+    
+    private func sum(firstMatrix:Matrix, firstRow:Int, secondMatrix:Matrix, secondCol:Int) -> Double {
+        let row = firstMatrix.row(index: firstRow)
+        let col = secondMatrix.column(index: secondCol)
+        var sum = 0.0
+        for r in row {
+            for c in col {
+                if let r0 = r, let c0 = c {
+                    sum += r0 + c0
+                }
+            }
+        }
+        return sum
     }
 }

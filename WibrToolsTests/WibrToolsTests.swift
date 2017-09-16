@@ -60,7 +60,7 @@ class WibrToolsTests: XCTestCase {
     
     func testSieveOfAtkin(){
         let primes = Primes()
-        let results = primes.sieveOfAtkin(max: 100000)
+        let results = primes.sieveOfAtkin(max: 10000)
         print(results)
     }
     
@@ -69,5 +69,27 @@ class WibrToolsTests: XCTestCase {
         walker.collecFiles(all:true) { (name, type) in
             print("\(type) : \(name)")
         }
+    }
+    
+    func testMatrixProduct() {
+        
+        let f: [[Double]] = [
+            [1,2,3],
+            [4,5,6]
+        ]
+        let s:[[Double]] = [
+            [-1,-2],
+            [-3,-4],
+            [-5,-6]
+        ]
+
+        let first = Matrix<Double>(values:f)
+        let second = Matrix<Double>(values:s)
+        
+        let p1 = first.product(matrix:second)
+        print(p1)
+        let p2 = second.product(matrix:first)
+        print(p2)
+
     }
 }

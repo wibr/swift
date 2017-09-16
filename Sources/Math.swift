@@ -39,6 +39,20 @@ public struct FibonaciIterator : IteratorProtocol {
 }
 
 public struct Math {
+    
+    public static func possibleSqrt(num:Int) -> (Int,Int) {
+        var y = num / 2
+        if y == 0 {
+            return (1,0)
+        }
+        var x = num / y
+        while y > x {
+            y = (x + y) / 2
+            x = num / y
+        }
+        return (y, num - y * y)
+    }
+    
     public static func power(base:Int, exponent:Int) -> Double {
         return pow(Double(base),Double(exponent))
     }
@@ -172,12 +186,12 @@ public struct Math {
         let end = Int(sqrt(Double(n)).rounded(.up))
         var current = n
         var index = 0
-        var p = Primes.First_100[index]
-        let k = Primes.First_100.count
+        var p = Primes.First[index]
+        let k = Primes.First.count
         while current > 1 && p <= end {
             current = testFactor(num:current, divisor:p, factors:&factors)
             if index < k {
-                p = Primes.First_100[index]
+                p = Primes.First[index]
                 index += 1
             }
             else {
