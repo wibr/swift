@@ -19,42 +19,42 @@ public struct Regex {
 
 extension Regex {
     public func match(_ text:String) -> Bool {
-        if regexp.characters.first == "^" {
-            return Regex.matchHere(regexp:regexp.characters.dropFirst(), text:text.characters)
+        if regexp.first == "^" {
+            return Regex.matchHere(regexp:String(regexp.dropFirst()), text:text)
         }
         var idx = text.startIndex
         while true {
-            if Regex.matchHere(regexp: regexp.characters, text: text.characters.suffix(from:idx)) {
+            if Regex.matchHere(regexp: regexp, text: String(text.suffix(from:idx))) {
                 return true
             }
             guard idx != text.endIndex else { break }
-            text.characters.formIndex(before: &idx)
+            text.formIndex(before: &idx)
         }
         return false
     }
 }
 
 extension Regex {
-    fileprivate static func matchHere(regexp:String.CharacterView, text: String.CharacterView) -> Bool {
+    fileprivate static func matchHere(regexp:String, text: String) -> Bool {
         if regexp.isEmpty {
             return true
         }
         if let c = regexp.first, regexp.dropFirst().first == "*" {
-            return matchStar(character: c, regexp: regexp.dropFirst(2), text: text)
+            return matchStar(character: c, regexp: String(regexp.dropFirst(2)), text: text)
         }
         if regexp.first == "$"  && regexp.dropFirst().isEmpty {
             return text.isEmpty
         }
         if let tc = text.first, let rc = regexp.first, rc == "." || tc == rc {
-            return matchHere(regexp: regexp.dropFirst(), text: text.dropFirst())
+            return matchHere(regexp: String(regexp.dropFirst()), text: String(text.dropFirst()))
         }
         return false
     }
     
-    fileprivate static func matchStar(character c:Character, regexp:String.CharacterView,text:String.CharacterView) -> Bool {
+    fileprivate static func matchStar(character c:Character, regexp:String,text:String) -> Bool {
         var idx = text.startIndex
         while true {
-            if matchHere(regexp: regexp, text: text.suffix(from:idx)) {
+            if matchHere(regexp: regexp, text: String(text.suffix(from:idx))) {
                 return true
             }
             if idx == text.endIndex || (text[idx] != c && c != "."){

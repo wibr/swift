@@ -44,7 +44,7 @@ public struct UlamSpiral {
         switch section {
         case 0 : return (ring,  half,                 -half + remainder + 1)
         case 2 : return (ring, -half,                  half - remainder - 1)
-        case 1 : return (ring, half - remainder - 1,  half)
+        case 1 : return (ring,  half - remainder - 1,  half)
         case 3 : return (ring, -half + remainder + 1, -half)
         default :
             // should not happen
