@@ -86,12 +86,12 @@ public struct BigInt : CustomStringConvertible {
     public init(string:String){
         var s = string
         var sgn:Sign?
-        if let idx = s.characters.index(of:"-"), idx == s.startIndex {
-            let fromIndex = s.characters.index(after: idx)
+        if let idx = s.index(of:"-"), idx == s.startIndex {
+            let fromIndex = s.index(after: idx)
             s = String(s[fromIndex ..< s.endIndex])
             sgn = .negative
         }
-        let array = s.characters.flatMap{Int(String($0))}
+        let array = s.flatMap{Int(String($0))}
         if let first = array.first, first == 0 {
             sgn = .none
         }
@@ -324,7 +324,7 @@ struct BigIntHelper {
     
     var addScheme = Matrix<BigIntOperation>(rows:3, columns:3)
     var subtractScheme = Matrix<BigIntOperation>(rows:3, columns:3)
-    let maxIntPower = String(Int.max).characters.count - 1
+    let maxIntPower = String(Int.max).count - 1
 
     init() {
         addScheme[0,0] = p_add_p
