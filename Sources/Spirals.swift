@@ -81,10 +81,24 @@ public struct UlamSpiral {
     }
     
     public func calculateNumber(position:PositionInRing) -> Int {
-        if position.ring == 0 && position.x == 0 && position.y == 0 {
+        if position.isZeroInstance() {
             return 1
         }
-        return 1
+        let ring = position.ring
+        let max = ring * ring
+        let min = (ring - 2) * (ring - 2)
+        let unit = ring - 1
+        let half = unit / 2
+        let offset = min + half
+        switch (position.x, position.y) {
+            case ( half, -half) : return max
+            case ( half, let y) : return offset + y
+            case (let x,  half) : return offset + unit - x
+            case (-half, let y) : return offset + (2 * unit) - y
+            case (let x, -half) : return offset + (3 * unit) + x
+            default :
+                return -1
+        }
     }
 }
 

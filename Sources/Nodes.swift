@@ -58,7 +58,7 @@ struct NodeDemo {
         let first = Node(value: "first")
         let second = Node(value: "second")
         _ = first.attach(node: second)
-        first.getEdge(node: second)
+        _ = first.getEdge(node: second)
         
         
         
