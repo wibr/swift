@@ -96,6 +96,25 @@ public struct Math {
         return f
     }
     
+    /**
+     Extended Euclidian Algorithem
+     */
+    public static func eea(_ a: Int, _ b:Int) -> (d:Int, m:Int, n:Int) {
+        var w = (a:a, b:b)
+        var p = (s:1, t:0, u:0, v:1)
+        while w.b != 0 {
+            let x = (q: w.a / w.b, r: w.a % w.b)
+            let tmp = (unew: p.s, vnew: p.t)
+            p.s = p.u - (x.q * p.s)
+            p.t = p.v - (x.q * p.t)
+            w.a = w.b
+            w.b = x.r
+            p.u = tmp.unew
+            p.v = tmp.vnew
+        }
+        return (w.a, p.u, p.v)
+    }
+
     public static func random(from: Int, to: Int) -> Int {
         let range = to - from + 1
         return Int(arc4random_uniform(UInt32(range)))
@@ -148,6 +167,21 @@ public struct Math {
     /**
      Converts a 10-base number to a value represended in the given base
      */
+    
+    public static func toBinary(number:Int) -> [Int]{
+        return Math.toBase(number: number, base: 2)
+    }
+    
+    public static func bitLength(number: Int) -> Int {
+        var p = number
+        var count = 0
+        while p > 0 {
+            p /= 2
+            count += 1
+        }
+        return count
+    }
+    
     public static func toBase(number:Int, base:Int = 2) -> [Int] {
         var values = [Int]()
         var v = number
@@ -156,6 +190,10 @@ public struct Math {
             v = v / base
         } while v > 0
         return values
+    }
+    
+    public static func fromBinary(number:[Int]) -> Int {
+        return Math.fromBase(number: number, base: 2)
     }
     
     public static func fromBase(number:[Int], base:Int) -> Int {

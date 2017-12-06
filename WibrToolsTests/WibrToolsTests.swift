@@ -92,4 +92,24 @@ class WibrToolsTests: XCTestCase {
         print(p2)
 
     }
+    
+    func testModularMath() {
+        let a = 53
+        let b = 37
+        let modulo = 17
+        let expected1 = (a * b) % modulo
+        let res1 = ModularMath.multiply(a, b, modulo: modulo)
+        XCTAssert(res1 == expected1)
+        
+        
+        let k = 77
+        let l = 13
+        let p = 101
+        let expected2 = 37
+        
+        let res2 = ModularMath.divide(divider: k, divisor: l, modulo: p)
+        XCTAssert(res2 == expected2)
+        print(res2)
+        
+    }
 }
