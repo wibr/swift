@@ -7,8 +7,9 @@
 
 import Foundation
 
+public typealias PositionInRing = (ring:Int, x:Int, y: Int)
+
 public struct UlamSpiral {
-    public typealias PositionInRing = (ring:Int, x:Int, y: Int)
     
     public init() {
     }
@@ -42,13 +43,13 @@ public struct UlamSpiral {
         let remainder = p % unit
         let half = unit / 2
         switch section {
-        case 0 : return (ring,  half,                 -half + remainder + 1)
-        case 2 : return (ring, -half,                  half - remainder - 1)
-        case 1 : return (ring,  half - remainder - 1,  half)
-        case 3 : return (ring, -half + remainder + 1, -half)
-        default :
-            // should not happen
-            return (0,0,0)
+            case 0 : return (ring,  half,                 -half + remainder + 1)
+            case 2 : return (ring, -half,                  half - remainder - 1)
+            case 1 : return (ring,  half - remainder - 1,  half)
+            case 3 : return (ring, -half + remainder + 1, -half)
+            default :
+                // should not happen
+                return (0,0,0)
         }
     }
 }
@@ -60,7 +61,6 @@ extension UlamSpiral : Sequence {
 }
 
 public struct UlamIterator : IteratorProtocol {
-    public typealias NumberPosition = (num:Int, x:Int, y:Int)
     
     private var number = 1
     private let ulam = UlamSpiral()
@@ -69,8 +69,8 @@ public struct UlamIterator : IteratorProtocol {
         self.number = offset
     }
     
-    public mutating func next() -> NumberPosition? {
-        var result: NumberPosition = (self.number, 0, 0)
+    public mutating func next() -> PositionInRing? {
+        var result: PositionInRing = (self.number, 0, 0)
         let coord = ulam.calculatePosition(num: self.number)
         result.x = coord.x
         result.y = coord.y
