@@ -12,7 +12,7 @@ public struct UlamSpiral {
     
     public init() {
     }
-    
+    // A 'ring' corresponds to the size of the square the number is positioned in
     public func calcRing(_ num: Int ) -> Int {
         let root = sqrt(Double(num))
         var b = root.rounded(.down)
