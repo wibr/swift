@@ -22,7 +22,7 @@ class WibrToolsTests: XCTestCase {
     func testUlamSpiralPosition() {
         let ulam = UlamSpiral()
         let number = 888
-        let expectedPosition = (ring:31, x:-2, y:15)
+        let expectedPosition = PositionInRing(31, -2, 15)
         let calculatedPosition = ulam.calculatePosition(num: number)
         let corner  = UlamSpiral.isCorner((calculatedPosition.x,calculatedPosition.y))
         XCTAssertFalse(corner)
