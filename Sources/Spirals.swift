@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 public struct PositionInRing {
     let ring: Int
     let x: Int
