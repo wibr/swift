@@ -35,7 +35,10 @@ class WibrToolsTests: XCTestCase {
         let size = 5
         let nums = size * size
         let expectedSum = 101
-        let actualSum = UlamSpiral().prefix(nums).filter{ abs($0.x) == abs($0.y) }.reduce(0) { $0 + $1.num }
+        let spiral = UlamSpiral()
+        let actualSum = spiral.prefix(nums).filter{ abs($0.x) == abs($0.y) }.reduce(0) { (r, pir) -> Int in
+            return r + spiral.calculateNumber(position:pir)
+        }
         XCTAssertTrue(actualSum == expectedSum)
     }
     
