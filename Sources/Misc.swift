@@ -21,6 +21,16 @@ public extension Bool {
     }
 }
 
+public extension Double {
+    public func withinRange(other:Double, delta: Double) -> Bool {
+        return (other + delta).isGreater(than: self) && (other - delta).isLess(than: self)
+    }
+    
+    public func isGreater(than: Double) -> Bool{
+        return than.isLess(than: self)
+    }
+}
+
 public extension Array {
     mutating func shuffle () {
         for i in (0..<self.count).reversed() {

@@ -115,4 +115,29 @@ class WibrToolsTests: XCTestCase {
         print(res2)
         
     }
+    
+    func testStatsData() {
+        let dataSet1 = StatsData([3.0,4,5,6,7,8,9])
+        let dataSet2 = StatsData([1,2.0])
+        var sum = dataSet1.sum
+        XCTAssertTrue(sum == 42)
+        var avg = dataSet1.average
+        XCTAssertTrue(avg == 6.0)
+        var stdev = dataSet1.stdev
+        XCTAssertTrue( stdev == 2.0)
+        var count = dataSet1.count
+        XCTAssertTrue(count == 7)
+        
+        let dataSetCombined = dataSet1 + dataSet2
+        
+        stdev = dataSetCombined.stdev
+        let ok = stdev.withinRange(other: 2.58, delta: 0.01)
+        XCTAssertTrue(ok)
+        sum = dataSetCombined.sum
+        XCTAssertTrue(sum == 45.0)
+        avg = dataSetCombined.average
+        XCTAssertTrue(avg == 5.0)
+        count = dataSetCombined.count
+        XCTAssertTrue(count == 9)
+    }
 }

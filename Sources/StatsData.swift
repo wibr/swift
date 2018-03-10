@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class StatsData {
+public class StatsData : CustomStringConvertible{
     var _count: Int
     var _avg: Double
     var _stdev: Double
@@ -108,4 +108,20 @@ public class StatsData {
     private static func calcSum(_ values: [Double] ) -> Double{
         return values.reduce(0.0, +)
     }
+    
+    public var description: String{
+        return "count: \(self.count), sum: \(self.sum), average: \(self.average), stdev: \(self.stdev)"
+    }
 }
+
+extension StatsData : Equatable {
+    public static func == (lhs: StatsData, rhs: StatsData) -> Bool {
+        return lhs._count == rhs._count && lhs._sum == rhs._sum && lhs._avg == rhs._avg && lhs._stdev.withinRange(other: rhs._stdev, delta: 0.0000001)
+    }
+    
+    public static func + (lhs:StatsData, rhs:StatsData) -> StatsData {
+        return lhs.merge(other: rhs)
+    }
+}
+
+
