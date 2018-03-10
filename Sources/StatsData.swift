@@ -8,22 +8,39 @@
 import Foundation
 
 public class StatsData {
-    var count: Int
-    var average: Double
-    var stdev: Double
-    var sum: Double
+    var _count: Int
+    var _avg: Double
+    var _stdev: Double
+    var _sum: Double
     
     public init(_ values:[Double]){
-        self.count = values.count
-        self.sum = StatsData.calcSum(values)
-        self.average = self.sum / Double(self.count)
-        self.stdev = StatsData.calcStDev(self.average, values)
+        self._count = values.count
+        self._sum = StatsData.calcSum(values)
+        self._avg = self._sum / Double(self._count)
+        self._stdev = StatsData.calcStDev(self._avg, values)
     }
+    
     public init(count: Int, avg: Double, stdev:Double) {
-        self.count = count;
-        self.average = avg;
-        self.sum = avg * Double(count);
-        self.stdev = stdev;
+        self._count = count
+        self._avg = avg
+        self._sum = avg * Double(count)
+        self._stdev = stdev
+    }
+    
+    public var count : Int {
+        return _count
+    }
+    
+    public var average : Double {
+        return _avg
+    }
+    
+    public var stdev : Double {
+        return _stdev
+    }
+    
+    public var sum : Double {
+        return _sum
     }
     /**
      * Merges this instance with the given StatsData.
