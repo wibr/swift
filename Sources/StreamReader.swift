@@ -27,7 +27,7 @@ public class StreamReader  {
     deinit {
         self.close()
     }
-
+    
     /// Return next line, or nil on EOF.
     public func nextLine() -> String? {
         precondition(fileHandle != nil, "Attempt to read from closed file")
@@ -71,11 +71,10 @@ public class StreamReader  {
         fileHandle = nil
     }
 }
-
-extension StreamReader : Sequence {
-    public func makeIterator() -> AnyIterator<String> {
-        return AnyIterator {
-            return self.nextLine()
-        }
+extension StreamReader : IteratorProtocol {
+    public func next() -> String? {
+        return nextLine()
     }
+}
+extension StreamReader : Sequence {
 }

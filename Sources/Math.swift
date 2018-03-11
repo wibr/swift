@@ -38,6 +38,28 @@ public struct FibonaciIterator : IteratorProtocol {
     }
 }
 
+public final class ReadRandom {
+    let handle = FileHandle(forReadingAtPath: "/dev/urandom")!
+    deinit {
+        handle.closeFile()
+    }
+    
+    public func getByte() -> UInt8 {
+        let byte = handle.readData(ofLength: 1)
+        return byte[0]
+    }
+    
+}
+
+extension ReadRandom : IteratorProtocol {
+    public func next() -> UInt8? {
+        return getByte()
+    }
+}
+
+extension ReadRandom : Sequence {
+}
+
 public struct Math {
     
     public static func possibleSqrt(num:Int) -> (Int,Int) {

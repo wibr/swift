@@ -41,6 +41,31 @@ public extension Array {
     }
 }
 
+extension Sequence {
+    public func split(batchSize: Int) -> AnySequence<[Iterator.Element]> {
+        return AnySequence { () -> AnyIterator<[Iterator.Element]> in
+            var iterator = self.makeIterator()
+            return AnyIterator {
+                var batch:[Iterator.Element] = []
+                while batch.count < batchSize, let el = iterator.next() {
+                    batch.append(el)
+                }
+                return batch.isEmpty ? nil : batch
+            }
+        }
+    }
+}
+
+extension Sequence {
+    public func reduce<A>( _ initial: A, combine: (inout A, Iterator.Element) -> () ) -> A {
+        var result = initial
+        for el in self {
+            combine(&result, el)
+        }
+        return result
+    }
+}
+
 public extension SignedInteger{
     static func arc4random_uniform(_ upper_bound: Self) -> Self{
         precondition(upper_bound > 0 && Int(upper_bound) < Int(UInt32.max),"arc4random_uniform only callable up to \(UInt32.max)")

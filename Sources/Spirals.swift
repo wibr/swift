@@ -8,14 +8,26 @@
 import Foundation
 
 public struct PositionInRing {
-    let ring: Int
-    let x: Int
-    let y: Int
+    let _ring: Int
+    let _x: Int
+    let _y: Int
+    
+    public var ring : Int {
+        return _ring
+    }
+    
+    public var x : Int {
+        return _x
+    }
+    
+    public var y : Int {
+        return _y
+    }
     
     public init(_ ring: Int, _ x: Int, _ y: Int){
-        self.ring = ring
-        self.x = x
-        self.y = y
+        self._ring = ring
+        self._x = x
+        self._y = y
     }
     
     public static func ZeroInstance() -> PositionInRing {
@@ -27,11 +39,11 @@ public struct PositionInRing {
     }
     
     public func isInvalidInstance() -> Bool {
-        return self.ring < 0
+        return self._ring < 0
     }
     
     public func isZeroInstance() -> Bool {
-        return self.ring == 0 && self.x == 0 && self.y == 0
+        return self._ring == 0 && self._x == 0 && self._y == 0
     }
 }
 
