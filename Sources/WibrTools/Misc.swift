@@ -115,8 +115,22 @@ public extension Sequence {
     }
 }
 
+// MARK: Data extensions
+
+public extension Data {
+    var utf8String : String? {
+        return String(data:self, encoding:.utf8)
+    }
+}
+
 
 // MARK: String extensions
+
+public extension String {
+    func trim() -> String {
+        return self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
 
 public extension String {
     public func wordValue(offset:Int = 64) -> Int {

@@ -12,7 +12,7 @@ public struct HttpError : Error, Codable {
     var code: String
     var detail: String
     
-   public  init(status: Int, code: String, detail: String){
+   public init(status: Int, code: String, detail: String){
         self.status = status
         self.code = code
         self.detail = detail
@@ -40,6 +40,7 @@ public enum ResponseError: Error {
 }
 
 public protocol RequestSender {
+    var debug: Bool {get set}
     func send<T>( url:URL, method:HttpMethod, requestHeaders:[String:String]?, body:Data?, responseType: T.Type, completion: @escaping (Result<T>) -> ()) where T : Decodable
 }
 
@@ -145,9 +146,17 @@ private class AsyncSender : NoopRequestSender {
 
 public class HttpClient {
     private var requestSender: RequestSender
-    
+    var _debug = false
     init(requestSender : RequestSender){
         self.requestSender = requestSender
+    }
+    
+    public var debug : Bool {
+        get { return _debug }
+        set {
+            self._debug = newValue
+            self.requestSender.debug = self._debug
+        }
     }
     
     public func get<T>(url:String,
