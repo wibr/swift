@@ -37,7 +37,7 @@ extension Result where T : Encodable {
     func json() -> Result<String> {
         switch self {
         case .success(let t) :
-            return Json.encodeToResult(object: t)
+            return Json.encodeToStringResult(object: t)
         case .failure(let e) :
             return .failure(e)
         }
@@ -60,6 +60,14 @@ extension Result {
         }
     }
     
+    func error() -> Error? {
+        switch self {
+        case Result.success: return nil
+        case Result.failure(let error): return error
+        }
+        
+    }
+    
     // Construct a .Success if the expression returns a value or a .Failure if it throws
     init(_ throwingExpr: () throws -> T) {
         do {
@@ -68,6 +76,15 @@ extension Result {
         } catch {
             self = Result.failure(error)
         }
+    }
+}
+
+extension Result {
+    func decodeError<T>() -> T? {
+        if let err = error(), err is T {
+           return err as? T
+        }
+        return nil
     }
 }
 

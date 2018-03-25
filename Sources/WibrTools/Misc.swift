@@ -15,12 +15,14 @@ public enum InitialisationError : Error {
 	case MissingArgument(String)
 }
 
+// MARK: Bool extensions
 public extension Bool {
     func xor(_ other:Bool) -> Bool {
         return XOR(self, other)
     }
 }
 
+// MARK: Double extensions
 public extension Double {
     public func withinRange(other:Double, delta: Double) -> Bool {
         return (other + delta).isGreater(than: self) && (other - delta).isLess(than: self)
@@ -30,6 +32,8 @@ public extension Double {
         return than.isLess(than: self)
     }
 }
+
+// MARK: Array extensions
 
 public extension Array {
     mutating func shuffle () {
@@ -41,31 +45,7 @@ public extension Array {
     }
 }
 
-extension Sequence {
-    public func split(batchSize: Int) -> AnySequence<[Iterator.Element]> {
-        return AnySequence { () -> AnyIterator<[Iterator.Element]> in
-            var iterator = self.makeIterator()
-            return AnyIterator {
-                var batch:[Iterator.Element] = []
-                while batch.count < batchSize, let el = iterator.next() {
-                    batch.append(el)
-                }
-                return batch.isEmpty ? nil : batch
-            }
-        }
-    }
-}
-
-extension Sequence {
-    public func reduce<A>( _ initial: A, combine: (inout A, Iterator.Element) -> () ) -> A {
-        var result = initial
-        for el in self {
-            combine(&result, el)
-        }
-        return result
-    }
-}
-
+// MARK: SignedInteger extensions
 public extension SignedInteger{
     static func arc4random_uniform(_ upper_bound: Self) -> Self{
         precondition(upper_bound > 0 && Int(upper_bound) < Int(UInt32.max),"arc4random_uniform only callable up to \(UInt32.max)")
@@ -73,7 +53,8 @@ public extension SignedInteger{
     }
 }
 
-extension MutableCollection where Self:RandomAccessCollection {
+// MARK: Mutable Collection extensions
+public extension MutableCollection where Self:RandomAccessCollection {
     mutating func shuffle() {
         var i = startIndex
         let beforeEndIndex = index(before:endIndex)
@@ -88,7 +69,9 @@ extension MutableCollection where Self:RandomAccessCollection {
     }
 }
 
-extension Sequence {
+// MARK: Sequence extensions
+
+public extension Sequence {
     func shuffled() -> [Iterator.Element] {
         var clone = Array(self)
         clone.shuffle()
@@ -96,13 +79,52 @@ extension Sequence {
     }
 }
 
-extension String {
+public extension Sequence {
+    public func reduce<A>( _ initial: A, combine: (inout A, Iterator.Element) -> () ) -> A {
+        var result = initial
+        for el in self {
+            combine(&result, el)
+        }
+        return result
+    }
+}
+
+public extension Sequence {
+    public func split(batchSize: Int) -> AnySequence<[Iterator.Element]> {
+        return AnySequence { () -> AnyIterator<[Iterator.Element]> in
+            var iterator = self.makeIterator()
+            return AnyIterator {
+                var batch:[Iterator.Element] = []
+                while batch.count < batchSize, let el = iterator.next() {
+                    batch.append(el)
+                }
+                return batch.isEmpty ? nil : batch
+            }
+        }
+    }
+}
+
+public extension Sequence {
+    public func failingFlatMap<T>( transform: (Self.Iterator.Element) throws -> T?) rethrows -> [T]? {
+        var result: [T] = []
+        for element in self {
+            guard let transformed = try transform(element) else { return nil }
+            result.append(transformed)
+        }
+        return result
+    }
+}
+
+
+// MARK: String extensions
+
+public extension String {
     public func wordValue(offset:Int = 64) -> Int {
         return self.unicodeScalars.reduce(0) {$0 + (Int($1.value) - offset)}
     }
 }
 
-extension String {
+public extension String {
     fileprivate var skipTable: [Character:Int ] {
         var skipTable:[Character:Int] = [:]
         for (i,c) in enumerated(){
