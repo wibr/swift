@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension Error {
-    func failure<T>() -> Result<T> {
+public extension Error {
+    public func failure<T>() -> Result<T> {
         return Result.failure(self)
     }
 }
@@ -18,14 +18,14 @@ public enum Result<T> {
     case failure(Error)
 }
 
-extension Result {
-    func map<U>(_ f: (T) -> U) -> Result<U> {
+public extension Result {
+    public func map<U>(_ f: (T) -> U) -> Result<U> {
         switch self {
         case .success(let t): return .success(f(t))
         case .failure(let err): return .failure(err)
         }
     }
-    func flatMap<U>(_ f: (T) -> Result<U>) -> Result<U> {
+    public func flatMap<U>(_ f: (T) -> Result<U>) -> Result<U> {
         switch self {
         case .success(let t): return f(t)
         case .failure(let err): return .failure(err)
@@ -33,8 +33,8 @@ extension Result {
     }
 }
 
-extension Result where T : Encodable {
-    func json() -> Result<String> {
+public extension Result where T : Encodable {
+    public func json() -> Result<String> {
         switch self {
         case .success(let t) :
             return Json.encodeToStringResult(object: t)
@@ -44,23 +44,23 @@ extension Result where T : Encodable {
     }
 }
 
-extension Result {
+public extension Result {
     // Return the value if it's a .Success or throw the error if it's a .Failure
-    func resolve() throws -> T {
+    public func resolve() throws -> T {
         switch self {
         case Result.success(let value): return value
         case Result.failure(let error): throw error
         }
     }
     
-    func value() -> T? {
+    public func value() -> T? {
         switch self {
         case Result.success(let value): return value
         case Result.failure: return nil
         }
     }
     
-    func error() -> Error? {
+    public func error() -> Error? {
         switch self {
         case Result.success: return nil
         case Result.failure(let error): return error
@@ -69,7 +69,7 @@ extension Result {
     }
     
     // Construct a .Success if the expression returns a value or a .Failure if it throws
-    init(_ throwingExpr: () throws -> T) {
+    public init(_ throwingExpr: () throws -> T) {
         do {
             let value = try throwingExpr()
             self = Result.success(value)
@@ -79,8 +79,8 @@ extension Result {
     }
 }
 
-extension Result {
-    func decodeError<T>() -> T? {
+public extension Result {
+    public func decodeError<T>() -> T? {
         if let err = error(), err is T {
            return err as? T
         }
