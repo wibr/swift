@@ -55,7 +55,6 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
     }
     
     func send<T>(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, responseType: T.Type, completion: @escaping (Result<T>) -> ()) where T : Decodable {
-        
     }
     
     func createSessionConfiguration(_ additionalHeaders:[AnyHashable: Any] = [:]) -> URLSessionConfiguration{
