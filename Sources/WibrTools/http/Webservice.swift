@@ -47,9 +47,10 @@ public enum HttpMethod : String {
 public struct Resource<A> {
     let path: String
     let parse: (Data) -> A?
-    var requestHeaders: [String:String]?
     var method:HttpMethod = HttpMethod.GET
-    var payload: Data?
+
+    public var requestHeaders: [String:String]?
+    public var payload: Data?
     
     init(path:String, method:HttpMethod = .GET, parse: @escaping (Data) -> A?){
         self.path = path
@@ -60,7 +61,7 @@ public struct Resource<A> {
 }
 
 extension Resource  {
-    init(path:String, method:HttpMethod = .GET, parseJson: @escaping (Any) -> A? ){
+    public init(path:String, method:HttpMethod = .GET, parseJson: @escaping (Any) -> A? ){
         self.path = path
         self.method = method
         self.parse = { data in
@@ -71,7 +72,7 @@ extension Resource  {
 }
 
 extension Resource where A : Decodable {
-    init(path:String, method:HttpMethod = .GET) {
+    public init(path:String, method:HttpMethod = .GET) {
         self.path = path
         self.method = method
         self.parse = { data in
@@ -198,6 +199,10 @@ public class Webservice {
     init(config:WebserviceConfig, sender:Sender){
         self.config = config
         self.sender = sender
+    }
+    
+    public func send<A>(resource:Resource<A>, completion: @escaping( Result<HttpSuccessResponse<A>> ) -> () ){
+        self.sender.send(resource: resource, completion: completion)
     }
 }
 
