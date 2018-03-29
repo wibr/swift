@@ -7,22 +7,15 @@
 
 import Foundation
 
-public struct HttpError : Error, Codable {
+public struct HttpError : Error {
     var status: Int
-    var code: String
-    var detail: String
+    var data: Data?
     
-   public init(status: Int, code: String, detail: String){
+   public init(status: Int, data: Data?){
         self.status = status
-        self.code = code
-        self.detail = detail
+        self.data = data
     }
     
-    public init(status: Int, code: String, detail: Error){
-        self.status = status
-        self.code = code
-        self.detail = detail.localizedDescription
-    }
 }
 
 public enum RequestError: Error, LocalizedError {
@@ -36,7 +29,7 @@ public enum ResponseError: Error {
     case invalidRequest(Int)
     case parsingError(String)
     case fatal(String)
-    case withData(HttpError)
+//    case withData(HttpError)
 }
 
 public protocol RequestSender {
@@ -76,14 +69,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
             return Result.failure(ResponseError.noData)
         }
         if statusCode >= 400 {
-            let errorResult = Json.decode(responseData, HttpError.self)
-            switch errorResult {
-            case .success(var httpError) :
-                httpError.status = statusCode
-                return Result.failure(ResponseError.withData(httpError))
-            case .failure(let err) :
-                return Result.failure(ResponseError.parsingError("Expected error-data of type: AbbiError. Detail: \(err)"))
-            }
+            return Result.failure(HttpError(status: statusCode, data: data))
         }
         let successResponse = Json.decode(responseData, responseType)
         switch successResponse {
