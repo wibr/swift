@@ -7,7 +7,8 @@
 
 import Foundation
 
-public struct HttpError : Error {
+public struct HttpError : LocalizedError, CustomStringConvertible  {
+    
     var status: Int
     var data: Data?
     
@@ -15,10 +16,24 @@ public struct HttpError : Error {
         self.status = status
         self.data = data
     }
+    public var description: String {
+        if let ed = errorDescription {
+            return ed
+        }
+        return "[status: \(self.status)] - no data"
+    }
     
+    public var errorDescription: String? {
+        var r = "[status: \(status)]"
+        if let d = self.data, let s = d.utf8String {
+            r = "\(r) - \(s)"
+        }
+        return r
+    }
+
 }
 
-public enum RequestError: Error, LocalizedError {
+public enum RequestError: Error {
     case invalidURL(String)
     case invalidData(String)
 }
