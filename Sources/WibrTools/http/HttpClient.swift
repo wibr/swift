@@ -53,7 +53,6 @@ public enum ResponseError: Error {
     case invalidRequest(Int)
     case parsingError(String)
     case fatal(String)
-//    case withData(HttpError)
 }
 
 public protocol RequestSender {
@@ -88,16 +87,6 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
         
     }
     
-    func processResponseData(data: Data?, statusCode: Int) -> Result<HttpResponse>{
-        guard let responseData = data else {
-            return Result.failure(ResponseError.noData)
-        }
-        if statusCode >= 400 {
-            return Result.failure(HttpError(status: statusCode, data: data))
-        }
-        return Result.success(HttpResponse(status: statusCode, data: responseData))
-    }
-    
     func debug(data: Data?) {
         if self.debug, let data = data, let str = String(data:data, encoding:.utf8) {
             print(str)
@@ -123,7 +112,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
             guard let r = response as? HTTPURLResponse else {
                 throw ResponseError.fatal("URLResponse not of expected type HTTPURLResponse but of actual-type: \(String(describing: response.self))")
             }
-            let result = self.processResponseData(data: data, statusCode: r.statusCode)
+            let result = Result.success(HttpResponse(status: r.statusCode, data: data))
             return try result.resolve()
         }
     }
