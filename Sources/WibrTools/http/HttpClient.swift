@@ -33,8 +33,8 @@ public struct HttpError : LocalizedError, CustomStringConvertible  {
 }
 
 public struct HttpResponse {
-    let status: Int
-    let data: Data?
+    public let status: Int
+    public let data: Data?
     
     init(status:Int, data:Data?){
         self.status = status
