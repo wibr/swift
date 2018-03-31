@@ -30,7 +30,16 @@ public struct HttpError : LocalizedError, CustomStringConvertible  {
         }
         return r
     }
+}
 
+public struct HttpResponse {
+    let status: Int
+    let data: Data?
+    
+    init(status:Int, data:Data?){
+        self.status = status
+        self.data = data
+    }
 }
 
 public enum RequestError: Error {
@@ -49,7 +58,7 @@ public enum ResponseError: Error {
 
 public protocol RequestSender {
     var debug: Bool {get set}
-    func send( url:URL, method:HttpMethod, requestHeaders:[String:String]?, body:Data?, completion: @escaping (Result<Data>) -> ())
+    func send( url:URL, method:HttpMethod, requestHeaders:[String:String]?, body:Data?, completion: @escaping (Result<HttpResponse>) -> ())
 }
 
 private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
@@ -62,7 +71,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
         self.resourceTimeout = resourceTimeout
     }
     
-    func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<Data>) -> ()) {
+    func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<HttpResponse>) -> ()) {
     }
     
     func createSessionConfiguration(_ additionalHeaders:[AnyHashable: Any] = [:]) -> URLSessionConfiguration{
@@ -79,14 +88,14 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
         
     }
     
-    func processResponseData(data: Data?, statusCode: Int) -> Result<Data>{
+    func processResponseData(data: Data?, statusCode: Int) -> Result<HttpResponse>{
         guard let responseData = data else {
             return Result.failure(ResponseError.noData)
         }
         if statusCode >= 400 {
             return Result.failure(HttpError(status: statusCode, data: data))
         }
-        return Result.success(responseData)
+        return Result.success(HttpResponse(status: statusCode, data: responseData))
     }
     
     func debug(data: Data?) {
@@ -107,7 +116,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
         return (session, request)
     }
     
-    func processResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data> {
+    func processResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<HttpResponse> {
         self.debug(data: data)
         return Result {
             if let err = error { throw err }
@@ -121,7 +130,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
 }
 
 private class SyncSender : NoopRequestSender {
-    override func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<Data>) -> ()){
+    override func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<HttpResponse>) -> ()){
         let preparation = self.prepareRequest(url: url, method: method, requestHeaders: requestHeaders, body: body)
         let task = preparation.session.synchronousDataTask(urlrequest: preparation.request)
         let result = self.processResponse(data: task.data, response: task.response, error: task.error)
@@ -130,7 +139,7 @@ private class SyncSender : NoopRequestSender {
 }
 
 private class AsyncSender : NoopRequestSender {
-    override func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<Data>) -> ()){
+    override func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<HttpResponse>) -> ()){
         let preparation = self.prepareRequest(url: url, method: method, requestHeaders: requestHeaders, body: body)
         let task = preparation.session.dataTask(with: preparation.request as URLRequest, completionHandler: { (data, response, error) -> Void in
             let result = self.processResponse(data: data, response: response, error: error)
@@ -157,7 +166,7 @@ public class HttpClient {
     
     public func get(url:String,
                        requestHeaders:[String:String] = [String:String](),
-                       _ resultHandler: @escaping (Result<Data>) -> ()) {
+                       _ resultHandler: @escaping (Result<HttpResponse>) -> ()) {
         self.send(url:url,
                   requestHeaders:requestHeaders,
                   body: nil,
@@ -168,7 +177,7 @@ public class HttpClient {
     public func post(url:String,
                         requestHeaders:[String:String] = [String:String](),
                         body:Data?,
-                        _ resultHandler: @escaping (Result<Data>) -> ()) {
+                        _ resultHandler: @escaping (Result<HttpResponse>) -> ()) {
         self.send(url: url,
                   requestHeaders:requestHeaders,
                   body: body,
@@ -179,7 +188,7 @@ public class HttpClient {
     public func put(url:String,
                        requestHeaders:[String:String] = [String:String](),
                        body:Data?,
-                       _ resultHandler: @escaping (Result<Data>) -> ()) {
+                       _ resultHandler: @escaping (Result<HttpResponse>) -> ()) {
         self.send(url: url,
                   requestHeaders:requestHeaders,
                   body: body,
@@ -189,7 +198,7 @@ public class HttpClient {
     
     public func delete(url:String,
                           requestHeaders:[String:String] = [String:String](),
-                          _ resultHandler: @escaping (Result<Data>) -> ()) {
+                          _ resultHandler: @escaping (Result<HttpResponse>) -> ()) {
         self.send(url: url,
                   requestHeaders:requestHeaders,
                   body: nil,
@@ -201,7 +210,7 @@ public class HttpClient {
                         requestHeaders:[String:String] = [String:String](),
                         body:Data?,
                         method: HttpMethod,
-                        _ resultHandler: @escaping (Result<Data>) -> ()) {
+                        _ resultHandler: @escaping (Result<HttpResponse>) -> ()) {
         guard let _url = URL(string: url) else { resultHandler(Result.failure(RequestError.invalidURL(url))); return }
         self.requestSender.send(url: _url, method:method, requestHeaders:requestHeaders, body: body,completion: resultHandler)
     }
