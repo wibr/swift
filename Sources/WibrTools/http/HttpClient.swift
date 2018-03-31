@@ -173,7 +173,7 @@ public class HttpClient {
     
     public func post<T>(url:String,
                         requestHeaders:[String:String] = [String:String](),
-                        body:Data,
+                        body:Data?,
                         responseType: T.Type,
                         _ resultHandler: @escaping (Result<T>) -> ()) where T : Decodable {
         self.send(url: url,
@@ -186,7 +186,7 @@ public class HttpClient {
     
     public func put<T>(url:String,
                        requestHeaders:[String:String] = [String:String](),
-                       body:Data,
+                       body:Data?,
                        responseType: T.Type,
                        _ resultHandler: @escaping (Result<T>) -> ()) where T : Decodable {
         self.send(url: url,
