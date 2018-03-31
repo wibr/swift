@@ -49,7 +49,7 @@ public enum ResponseError: Error {
 
 public protocol RequestSender {
     var debug: Bool {get set}
-    func send<T>( url:URL, method:HttpMethod, requestHeaders:[String:String]?, body:Data?, responseType: T.Type, completion: @escaping (Result<T>) -> ()) where T : Decodable
+    func send( url:URL, method:HttpMethod, requestHeaders:[String:String]?, body:Data?, completion: @escaping (Result<Data>) -> ())
 }
 
 private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
@@ -62,7 +62,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
         self.resourceTimeout = resourceTimeout
     }
     
-    func send<T>(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, responseType: T.Type, completion: @escaping (Result<T>) -> ()) where T : Decodable {
+    func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<Data>) -> ()) {
     }
     
     func createSessionConfiguration(_ additionalHeaders:[AnyHashable: Any] = [:]) -> URLSessionConfiguration{
@@ -79,18 +79,14 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
         
     }
     
-    func processResponseData<T>(data: Data?, statusCode: Int, responseType:T.Type) -> Result<T> where T : Decodable {
+    func processResponseData(data: Data?, statusCode: Int) -> Result<Data>{
         guard let responseData = data else {
             return Result.failure(ResponseError.noData)
         }
         if statusCode >= 400 {
             return Result.failure(HttpError(status: statusCode, data: data))
         }
-        let successResponse = Json.decode(responseData, responseType)
-        switch successResponse {
-        case .success(let obj) : return Result.success(obj)
-        case .failure(let err) : return Result.failure(ResponseError.parsingError("Unable to decode response-data of type: \(responseType). Detail: \(err)"))
-        }
+        return Result.success(responseData)
     }
     
     func debug(data: Data?) {
@@ -111,33 +107,33 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
         return (session, request)
     }
     
-    func processResponse<T>(responseType: T.Type, data: Data?, response: URLResponse?, error: Error?) -> Result<T> where T : Decodable{
+    func processResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data> {
         self.debug(data: data)
         return Result {
             if let err = error { throw err }
             guard let r = response as? HTTPURLResponse else {
                 throw ResponseError.fatal("URLResponse not of expected type HTTPURLResponse but of actual-type: \(String(describing: response.self))")
             }
-            let result = self.processResponseData(data: data, statusCode: r.statusCode, responseType: responseType)
+            let result = self.processResponseData(data: data, statusCode: r.statusCode)
             return try result.resolve()
         }
     }
 }
 
 private class SyncSender : NoopRequestSender {
-    override func send<T>(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, responseType: T.Type, completion: @escaping (Result<T>) -> ()) where T : Decodable {
+    override func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<Data>) -> ()){
         let preparation = self.prepareRequest(url: url, method: method, requestHeaders: requestHeaders, body: body)
         let task = preparation.session.synchronousDataTask(urlrequest: preparation.request)
-        let result = self.processResponse(responseType: responseType, data: task.data, response: task.response, error: task.error)
+        let result = self.processResponse(data: task.data, response: task.response, error: task.error)
         completion(result)
     }
 }
 
 private class AsyncSender : NoopRequestSender {
-    override func send<T>(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, responseType: T.Type, completion: @escaping (Result<T>) -> ()) where T : Decodable {
+    override func send(url: URL, method: HttpMethod, requestHeaders: [String : String]?, body: Data?, completion: @escaping (Result<Data>) -> ()){
         let preparation = self.prepareRequest(url: url, method: method, requestHeaders: requestHeaders, body: body)
         let task = preparation.session.dataTask(with: preparation.request as URLRequest, completionHandler: { (data, response, error) -> Void in
-            let result = self.processResponse(responseType: responseType, data: data, response: response, error: error)
+            let result = self.processResponse(data: data, response: response, error: error)
             completion(result )
         })
         task.resume()
@@ -159,64 +155,55 @@ public class HttpClient {
         }
     }
     
-    public func get<T>(url:String,
+    public func get(url:String,
                        requestHeaders:[String:String] = [String:String](),
-                       responseType: T.Type,
-                       _ resultHandler: @escaping (Result<T>) -> ()) where T : Decodable {
+                       _ resultHandler: @escaping (Result<Data>) -> ()) {
         self.send(url:url,
                   requestHeaders:requestHeaders,
                   body: nil,
                   method:.GET,
-                  responseType:responseType,
                   resultHandler)
     }
     
-    public func post<T>(url:String,
+    public func post(url:String,
                         requestHeaders:[String:String] = [String:String](),
                         body:Data?,
-                        responseType: T.Type,
-                        _ resultHandler: @escaping (Result<T>) -> ()) where T : Decodable {
+                        _ resultHandler: @escaping (Result<Data>) -> ()) {
         self.send(url: url,
                   requestHeaders:requestHeaders,
                   body: body,
                   method: .POST,
-                  responseType: responseType,
                   resultHandler)
     }
     
-    public func put<T>(url:String,
+    public func put(url:String,
                        requestHeaders:[String:String] = [String:String](),
                        body:Data?,
-                       responseType: T.Type,
-                       _ resultHandler: @escaping (Result<T>) -> ()) where T : Decodable {
+                       _ resultHandler: @escaping (Result<Data>) -> ()) {
         self.send(url: url,
                   requestHeaders:requestHeaders,
                   body: body,
                   method: .PUT,
-                  responseType: responseType,
                   resultHandler)
     }
     
-    public func delete<T>(url:String,
+    public func delete(url:String,
                           requestHeaders:[String:String] = [String:String](),
-                          responseType: T.Type,
-                          _ resultHandler: @escaping (Result<T>) -> ()) where T : Decodable {
+                          _ resultHandler: @escaping (Result<Data>) -> ()) {
         self.send(url: url,
                   requestHeaders:requestHeaders,
                   body: nil,
                   method: .DELETE,
-                  responseType: responseType,
                   resultHandler)
     }
     
-    public func send<T>(url:String,
+    public func send(url:String,
                         requestHeaders:[String:String] = [String:String](),
                         body:Data?,
                         method: HttpMethod,
-                        responseType: T.Type,
-                        _ resultHandler: @escaping (Result<T>) -> ()) where T : Decodable {
+                        _ resultHandler: @escaping (Result<Data>) -> ()) {
         guard let _url = URL(string: url) else { resultHandler(Result.failure(RequestError.invalidURL(url))); return }
-        self.requestSender.send(url: _url, method:method, requestHeaders:requestHeaders, body: body, responseType: responseType, completion: resultHandler)
+        self.requestSender.send(url: _url, method:method, requestHeaders:requestHeaders, body: body,completion: resultHandler)
     }
 }
 
