@@ -54,20 +54,20 @@ public extension SignedInteger{
 }
 
 // MARK: Mutable Collection extensions
-public extension MutableCollection where Self:RandomAccessCollection {
-    mutating func shuffle() {
-        var i = startIndex
-        let beforeEndIndex = index(before:endIndex)
-        while i < beforeEndIndex {
-            let dist = distance(from: i, to: endIndex)
-            let randomDistance = Int(arc4random_uniform(UInt32(dist)))
-            let j = index(i, offsetBy: randomDistance)
-            guard i != j else {continue}
-            self.swapAt(i, j)
-            formIndex(after:&i)
-        }
-    }
-}
+//public extension MutableCollection where Self:RandomAccessCollection {
+//    mutating func shuffle() {
+//        var i = startIndex
+//        let beforeEndIndex = index(before:endIndex)
+//        while i < beforeEndIndex {
+//            let dist = distance(from: i, to: endIndex)
+//            let randomDistance = Int(arc4random_uniform(UInt32(dist)))
+//            let j = index(before: <#T##Self.Index#>)
+//            guard i != j else {continue}
+//            self.swapAt(i, j)
+//            formIndex(after:&i)
+//        }
+//    }
+//}
 
 // MARK: Sequence extensions
 
