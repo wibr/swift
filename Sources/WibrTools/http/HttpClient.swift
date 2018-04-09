@@ -60,7 +60,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
     
     public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?){
         
-    }
+    } 
     
     func debug(data: Data?) {
         if self.debug, let data = data, let str = String(data:data, encoding:.utf8) {
