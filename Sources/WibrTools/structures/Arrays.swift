@@ -41,4 +41,11 @@ struct Arrays {
         }
         return true
     }
+    
+    public static func interleave<T>(first:[T], second:[T]) -> [T] {
+        let commonLength = min(first.count, second.count)
+        return zip(first, second).flatMap { [$0, $1] }
+            + first.suffix(from: commonLength)
+            + second.suffix(from: commonLength)
+    }
 }

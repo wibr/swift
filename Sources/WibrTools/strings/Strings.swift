@@ -24,7 +24,6 @@ public struct Strings {
         }
     }
     
-    
     public static func randomString(length: Int) -> String {
         let len = UInt32(Strings.AlphaNumerics.count)
         var randomString = String()

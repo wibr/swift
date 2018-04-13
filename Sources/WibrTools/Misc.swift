@@ -36,7 +36,7 @@ public extension Double {
 // MARK: Array extensions
 
 public extension Array {
-    mutating func shuffle () {
+    public mutating func shuffle () {
         for i in (0..<self.count).reversed() {
             let ix1 = i
             let ix2 = Int(arc4random_uniform(UInt32(i+1)))
@@ -47,7 +47,7 @@ public extension Array {
 
 // MARK: SignedInteger extensions
 public extension SignedInteger{
-    static func arc4random_uniform(_ upper_bound: Self) -> Self{
+    public static func arc4random_uniform(_ upper_bound: Self) -> Self{
         precondition(upper_bound > 0 && Int(upper_bound) < Int(UInt32.max),"arc4random_uniform only callable up to \(UInt32.max)")
         return numericCast(Darwin.arc4random_uniform(numericCast(upper_bound)))
     }
@@ -55,7 +55,7 @@ public extension SignedInteger{
 
 // MARK: Mutable Collection extensions
 public extension MutableCollection where Self:RandomAccessCollection {
-    mutating func shuffle() {
+    public mutating func shuffle() {
         var i = startIndex
         let beforeEndIndex = index(before:endIndex)
         while i < beforeEndIndex {
@@ -72,7 +72,7 @@ public extension MutableCollection where Self:RandomAccessCollection {
 // MARK: Sequence extensions
 
 public extension Sequence {
-    func shuffled() -> [Iterator.Element] {
+    public func shuffled() -> [Iterator.Element] {
         var clone = Array(self)
         clone.shuffle()
         return clone
@@ -118,7 +118,7 @@ public extension Sequence {
 // MARK: Data extensions
 
 public extension Data {
-    var utf8String : String? {
+    public var utf8String : String? {
         return String(data:self, encoding:.utf8)
     }
 }
@@ -127,7 +127,7 @@ public extension Data {
 // MARK: String extensions
 
 public extension String {
-    func trim() -> String {
+    public func trim() -> String {
         return self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
