@@ -78,34 +78,29 @@ public struct Column {
     }
     
     private func padLeft(_ value: String, remaining: Int) -> String {
-        return value + tokens(token: " ", remaining)
+        return value + Strings.generateString(token: " ", remaining)
     }
 
     private func padRight(_ value: String, remaining: Int) -> String {
-        return tokens(token: " ", remaining) + value
+        return Strings.generateString(token: " ", remaining) + value
     }
 
     private func padCenter(_ value: String, remaining: Int) -> String {
         let left = remaining / 2
         let right = self.width - value.count - left
-        return tokens(token: " ", left) + value + tokens(token: " ", right)
+        return Strings.generateString(token: " ", left) + value + Strings.generateString(token: " ", right)
     }
 
-    private func tokens(token: String, _ count: Int) -> String {
-        var s = ""
-        for _ in 0..<count {
-            s += token
-        }
-        return s
-    }
 }
 
 public typealias Row = [String]
 
 public struct Grid {
+    public static let EM_DASH = "—"
     public let columns: [Column]
     public var rows = [Row]()
     public var header: Row?
+    public var headerSeparatorToken: String?
     
     public init(columns: [Column]) {
         self.columns = columns
@@ -119,6 +114,11 @@ public struct Grid {
     public func write(printer:Printer) {
         if let headerRow = self.header {
             writeRow(printer: printer, row: headerRow)
+            printer.writeln()
+        }
+        if let hst = self.headerSeparatorToken {
+            let gridWidth = self.columns.reduce(0) {$0 + $1.width}
+            printer.write(value: Strings.generateString(token: hst, gridWidth))
             printer.writeln()
         }
         for row in rows {

@@ -149,6 +149,7 @@ class WibrToolsTests: XCTestCase {
         columns.append(Column(width: 30, alignment: .Center))
         columns.append(Column(width: 20, alignment: .Right))
         var grid = Grid(columns: columns)
+        grid.headerSeparatorToken = Grid.EM_DASH
         grid.addRow(row: ["A", "testje", "15"])
         grid.addRow(row: ["B1", "anders dan", "1"])
         grid.addRow(row: ["B2", "verveling", "119"])

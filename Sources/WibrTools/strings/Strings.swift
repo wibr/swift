@@ -33,4 +33,13 @@ public struct Strings {
         }
         return randomString
     }
+    
+    public static func generateString(token: String, _ count: Int) -> String {
+        var s = ""
+        for _ in 0..<count {
+            s += token
+        }
+        return s
+    }
+
 }
