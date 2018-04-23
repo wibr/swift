@@ -47,24 +47,8 @@ class WebserviceTest: XCTestCase {
     }
 
     func testWebservice() {
-        let baseUrl = "http://localhost:3000/api/v1/conversation"
+//        let baseUrl = "http://localhost:3000/api/v1/conversation"
         
-        let webservice = Webservice(baseUrl: baseUrl)
-    
-        var resource = Resource<Script>(path: "/scripts")
-        resource.requestHeaders = ["Authorization":"Bearer AFAFDSFAF"]
-        webservice.send(resource: resource) { result in
-            do {
-                let resp = try result.resolve()
-                print(resp.value)
-            }
-            catch (let err as HttpErrorResponse) {
-                print(err.statusCode)
-            }
-            catch {
-                print(error)
-            }
-        }
         
     }
 
