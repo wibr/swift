@@ -13,39 +13,54 @@ public enum Alignment {
     case Right
 }
 
+public enum RowType {
+    case Header
+    case Row
+    case Footer
+}
+
 public protocol Printer {
-    func write(value: String)
+    func write(value: String, rowType: RowType, rowIndex: Int)
+    func writeLine(width: Int, token: String)
     func writeln()
 }
 
 public protocol StringEnhancer {
-    func beforePadding(value:String, alignment:Alignment) -> String
-    func afterPadding(value:String, alignment: Alignment) -> String
+    func beforePadding(value:String, alignment: Alignment?) -> String
+    func afterPadding(value:String, alignment: Alignment?) -> String
 }
 
 extension StringEnhancer {
-    func beforePadding(value:String, alignment:Alignment) -> String {
+    func beforePadding(value:String, alignment: Alignment?) -> String {
         return value
     }
-    func afterPadding(value:String, alignment:Alignment) -> String {
+    func afterPadding(value:String, alignment: Alignment?) -> String {
         return value
     }
 }
 
 public struct ConsolePrinter : Printer {
+    public init() {
+    }
+    
     public func writeln() {
         print(terminator: "\n")
     }
     
-    public func write(value: String) {
-        print(value, terminator:"")
+    public func write(value: String, rowType: RowType, rowIndex: Int) {
+        print(value, terminator: "")
     }
+    
+    public func writeLine(width: Int, token: String) {
+        print(Strings.generateString(token: token, width), terminator: "")
+    }
+    
 }
 
 public struct Column {
     public let width: Int
-    public let alignment: Alignment
-    
+    public var token: String?
+    public var alignment: Alignment?
     public var enhancer: StringEnhancer?
     
     public init(width: Int, alignment: Alignment){
@@ -53,8 +68,16 @@ public struct Column {
         self.alignment = alignment
     }
     
+    public init(width: Int, token:String){
+        self.width = width
+        self.token = token
+    }
+    
     public func prepare(value: String) -> String{
         var current = value
+        if let fixedToken = self.token {
+            return Strings.generateString(token: fixedToken, self.width)
+        }
         if let eh = self.enhancer {
             current = eh.beforePadding(value: current, alignment: self.alignment)
         }
@@ -63,13 +86,15 @@ public struct Column {
         if remaining < 0 {
             return String(current.prefix(-remaining))
         }
-        switch alignment {
-            case .Left :
-                current = padLeft(current, remaining: remaining)
-            case .Center :
-                current = padCenter(current, remaining: remaining)
-            case .Right:
-                current = padRight(current, remaining: remaining)
+        if let al = self.alignment {
+            switch al {
+                case .Left :
+                    current = padLeft(current, remaining: remaining)
+                case .Center :
+                    current = padCenter(current, remaining: remaining)
+                case .Right:
+                    current = padRight(current, remaining: remaining)
+            }
         }
         if let eh = self.enhancer {
             current = eh.afterPadding(value: current, alignment: self.alignment)
@@ -100,7 +125,9 @@ public struct Grid {
     public let columns: [Column]
     public var rows = [Row]()
     public var header: Row?
+    public var footer: Row?
     public var headerSeparatorToken: String?
+    public var footerSeparatorToken: String?
     
     public init(columns: [Column]) {
         self.columns = columns
@@ -112,27 +139,40 @@ public struct Grid {
     }
     
     public func write(printer:Printer) {
+        var index = 0
         if let headerRow = self.header {
-            writeRow(printer: printer, row: headerRow)
+            writeRow(printer: printer, row: headerRow, rowType: .Header, rowIndex: index)
             printer.writeln()
+            index += 1
         }
         if let hst = self.headerSeparatorToken {
             let gridWidth = self.columns.reduce(0) {$0 + $1.width}
-            printer.write(value: Strings.generateString(token: hst, gridWidth))
+            printer.writeLine(width:gridWidth, token: hst)
             printer.writeln()
         }
-        for row in rows {
-            writeRow(printer: printer, row: row)
+        for row in rows.enumerated() {
+            index += row.offset
+            writeRow(printer: printer, row: row.element, rowType: .Row, rowIndex: index)
             printer.writeln()
+        }
+        if let fst = self.footerSeparatorToken {
+            let gridWidth = self.columns.reduce(0) {$0 + $1.width}
+            printer.writeLine(width:gridWidth, token: fst)
+            printer.writeln()
+        }
+        if let footerRow = self.footer {
+            writeRow(printer: printer, row: footerRow, rowType: .Footer, rowIndex: index)
+            printer.writeln()
+
         }
     }
     
-    private func writeRow(printer: Printer, row:Row){
+    private func writeRow(printer: Printer, row:Row, rowType: RowType, rowIndex: Int){
         for index in 0..<columns.count {
             let col = columns[index]
             let str = row[index]
             let value = col.prepare(value: str)
-            printer.write(value: value)
+            printer.write(value: value, rowType: rowType, rowIndex: rowIndex)
         }
     }
 }
