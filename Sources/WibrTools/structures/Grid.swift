@@ -20,6 +20,7 @@ public enum RowType {
 }
 
 public protocol Printer {
+    func writePrefix()
     func write(value: String, rowType: RowType, rowIndex: Int)
     func writeLine(width: Int, token: String)
     func writeln()
@@ -58,6 +59,12 @@ public struct ConsolePrinter : Printer {
         print(terminator: "\n")
     }
     
+    public func writePrefix() {
+        if let p = self.prefix {
+            print(p, terminator:"")
+        }
+    }
+    
     public func write(value: String, rowType: RowType, rowIndex: Int) {
         var line: String
         if let lr = self.lineRenderer {
@@ -65,9 +72,6 @@ public struct ConsolePrinter : Printer {
         }
         else {
             line = value
-        }
-        if let p = self.prefix {
-            print(p, terminator: "")
         }
         print(line, terminator: "")
     }
@@ -79,9 +83,6 @@ public struct ConsolePrinter : Printer {
         }
         else {
             line = Strings.generateString(token: token, width)
-        }
-        if let p = self.prefix {
-            print(p, terminator: "")
         }
         print(line, terminator: "")
     }
@@ -173,27 +174,31 @@ public struct Grid {
     
     public func write(printer:Printer) {
         var index = 0
+        let gridWidth = self.columns.reduce(0) {$0 + $1.width}
         if let headerRow = self.header {
+            printer.writePrefix()
             writeRow(printer: printer, row: headerRow, rowType: .Header, rowIndex: index)
             printer.writeln()
             index += 1
         }
         if let hst = self.headerSeparatorToken {
-            let gridWidth = self.columns.reduce(0) {$0 + $1.width}
+            printer.writePrefix()
             printer.writeLine(width:gridWidth, token: hst)
             printer.writeln()
         }
         for row in rows.enumerated() {
             index += row.offset
+            printer.writePrefix()
             writeRow(printer: printer, row: row.element, rowType: .Row, rowIndex: index)
             printer.writeln()
         }
         if let fst = self.footerSeparatorToken {
-            let gridWidth = self.columns.reduce(0) {$0 + $1.width}
+            printer.writePrefix()
             printer.writeLine(width:gridWidth, token: fst)
             printer.writeln()
         }
         if let footerRow = self.footer {
+            printer.writePrefix()
             writeRow(printer: printer, row: footerRow, rowType: .Footer, rowIndex: index)
             printer.writeln()
         }

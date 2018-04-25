@@ -147,7 +147,7 @@ class WibrToolsTests: XCTestCase {
         let space = "...."
         first.enhancer = StringWrapper()
         columns.append(first)
-        columns.append(Column(label:"2", width: 6))
+        columns.append(Column(label:"2", width: space.count))
         columns.append(Column(label:"3", width: 30, alignment: .Center))
         columns.append(Column(label:"4", width: 20, alignment: .Right))
         var grid = Grid(columns: columns)
@@ -158,7 +158,7 @@ class WibrToolsTests: XCTestCase {
         grid.addRow(row: ["B2",space, "verveling", "119"])
         grid.addRow(row: ["C", space, "warme windstroming", "35"])
         grid.addRow(row: ["D", space, "buro lamp", "5"])
-        grid.write(printer: ConsolePrinter())
+        grid.write(printer: ConsolePrinter(prefix: "  "))
 
     }
     
