@@ -46,34 +46,44 @@ public protocol LineRenderer {
 
 public struct ConsolePrinter : Printer {
     public var lineRenderer : LineRenderer?
+    private var prefix : String?
     
     public init() {
     }
     
+    public init(prefix:String){
+        self.prefix = prefix
+    }
     public func writeln() {
         print(terminator: "\n")
     }
     
     public func write(value: String, rowType: RowType, rowIndex: Int) {
-        var line: String?
+        var line: String
         if let lr = self.lineRenderer {
             line = lr.renderRow(value: value, rowType: rowType, rowIndex: rowIndex)
         }
         else {
             line = value
         }
-        print(line!, terminator: "")
+        if let p = self.prefix {
+            print(p, terminator: "")
+        }
+        print(line, terminator: "")
     }
     
     public func writeLine(width: Int, token: String) {
-        var line: String?
+        var line: String
         if let lr = self.lineRenderer {
             line = lr.renderLine(width: width, token: token)
         }
         else {
             line = Strings.generateString(token: token, width)
         }
-        print(line!, terminator: "")
+        if let p = self.prefix {
+            print(p, terminator: "")
+        }
+        print(line, terminator: "")
     }
     
 }
