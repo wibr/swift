@@ -26,15 +26,15 @@ public protocol Printer {
 }
 
 public protocol StringEnhancer {
-    func beforePadding(value:String, alignment: Alignment?) -> String
-    func afterPadding(value:String, alignment: Alignment?) -> String
+    func beforePadding(value:String,  column: Column) -> String
+    func afterPadding(value:String,  column: Column) -> String
 }
 
 extension StringEnhancer {
-    func beforePadding(value:String, alignment: Alignment?) -> String {
+    func beforePadding(value:String, column: Column) -> String {
         return value
     }
-    func afterPadding(value:String, alignment: Alignment?) -> String {
+    func afterPadding(value:String,  column: Column) -> String {
         return value
     }
 }
@@ -58,23 +58,26 @@ public struct ConsolePrinter : Printer {
 }
 
 public struct Column {
+    public let label: String
     public let width: Int
     public var alignment: Alignment?
     public var enhancer: StringEnhancer?
     
-    public init(width: Int, alignment: Alignment){
+    public init(label: String, width: Int, alignment: Alignment){
+        self.label = label
         self.width = width
         self.alignment = alignment
     }
     
-    public init(width: Int){
+    public init(label:String,width: Int){
+        self.label = label
         self.width = width
     }
     
     public func prepare(value: String) -> String{
         var current = value
         if let eh = self.enhancer {
-            current = eh.beforePadding(value: current, alignment: self.alignment)
+            current = eh.beforePadding(value: current,  column: self)
         }
         let count = current.count
         let remaining = self.width - count
@@ -92,7 +95,7 @@ public struct Column {
             }
         }
         if let eh = self.enhancer {
-            current = eh.afterPadding(value: current, alignment: self.alignment)
+            current = eh.afterPadding(value: current, column: self)
         }
         return current
     }

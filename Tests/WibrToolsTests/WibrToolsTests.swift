@@ -143,13 +143,13 @@ class WibrToolsTests: XCTestCase {
     
     func testGrid() {
         var columns = [Column]()
-        var first = Column(width: 10, alignment: .Left)
+        var first = Column(label:"1",width: 10, alignment: .Left)
         let space = "...."
         first.enhancer = StringWrapper()
         columns.append(first)
-        columns.append(Column(width: 6))
-        columns.append(Column(width: 30, alignment: .Center))
-        columns.append(Column(width: 20, alignment: .Right))
+        columns.append(Column(label:"2", width: 6))
+        columns.append(Column(label:"3", width: 30, alignment: .Center))
+        columns.append(Column(label:"4", width: 20, alignment: .Right))
         var grid = Grid(columns: columns)
         grid.headerSeparatorToken = Grid.EM_DASH
         grid.footerSeparatorToken = Grid.EM_DASH
@@ -163,7 +163,7 @@ class WibrToolsTests: XCTestCase {
     }
     
     struct StringWrapper : StringEnhancer {
-        func beforePadding(value: String, alignment: Alignment?) -> String {
+        func beforePadding(value: String, column: Column) -> String {
             return "*\(value)*"
         }
     }
