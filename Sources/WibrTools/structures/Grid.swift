@@ -38,8 +38,15 @@ extension StringEnhancer {
         return value
     }
 }
+public protocol LineRenderer {
+    func renderLine(width:Int, token:String) -> String
+    func renderRow(value: String, rowType: RowType, rowIndex: Int) -> String
+}
+
 
 public struct ConsolePrinter : Printer {
+    public var lineRenderer : LineRenderer?
+    
     public init() {
     }
     
@@ -48,11 +55,25 @@ public struct ConsolePrinter : Printer {
     }
     
     public func write(value: String, rowType: RowType, rowIndex: Int) {
-        print(value, terminator: "")
+        var line: String?
+        if let lr = self.lineRenderer {
+            line = lr.renderRow(value: value, rowType: rowType, rowIndex: rowIndex)
+        }
+        else {
+            line = value
+        }
+        print(line!, terminator: "")
     }
     
     public func writeLine(width: Int, token: String) {
-        print(Strings.generateString(token: token, width), terminator: "")
+        var line: String?
+        if let lr = self.lineRenderer {
+            line = lr.renderLine(width: width, token: token)
+        }
+        else {
+            line = Strings.generateString(token: token, width)
+        }
+        print(line!, terminator: "")
     }
     
 }
@@ -134,6 +155,10 @@ public struct Grid {
     public mutating func addRow(row:Row) {
         assert(row.count == columns.count)
         self.rows.append(row)
+    }
+    
+    public mutating func clearRows() {
+        self.rows.removeAll()
     }
     
     public func write(printer:Printer) {
