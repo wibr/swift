@@ -59,7 +59,6 @@ public struct ConsolePrinter : Printer {
 
 public struct Column {
     public let width: Int
-    public var token: String?
     public var alignment: Alignment?
     public var enhancer: StringEnhancer?
     
@@ -68,16 +67,12 @@ public struct Column {
         self.alignment = alignment
     }
     
-    public init(width: Int, token:String){
+    public init(width: Int){
         self.width = width
-        self.token = token
     }
     
     public func prepare(value: String) -> String{
         var current = value
-        if let fixedToken = self.token {
-            return Strings.generateString(token: fixedToken, self.width)
-        }
         if let eh = self.enhancer {
             current = eh.beforePadding(value: current, alignment: self.alignment)
         }
@@ -163,7 +158,6 @@ public struct Grid {
         if let footerRow = self.footer {
             writeRow(printer: printer, row: footerRow, rowType: .Footer, rowIndex: index)
             printer.writeln()
-
         }
     }
     

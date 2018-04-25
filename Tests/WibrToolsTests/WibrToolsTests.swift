@@ -144,19 +144,20 @@ class WibrToolsTests: XCTestCase {
     func testGrid() {
         var columns = [Column]()
         var first = Column(width: 10, alignment: .Left)
+        let space = "...."
         first.enhancer = StringWrapper()
         columns.append(first)
-        columns.append(Column(width: 6, token: "."))
+        columns.append(Column(width: 6))
         columns.append(Column(width: 30, alignment: .Center))
         columns.append(Column(width: 20, alignment: .Right))
         var grid = Grid(columns: columns)
         grid.headerSeparatorToken = Grid.EM_DASH
         grid.footerSeparatorToken = Grid.EM_DASH
-        grid.addRow(row: ["A", "", "testje", "15"])
-        grid.addRow(row: ["B1","", "anders dan", "1"])
-        grid.addRow(row: ["B2","", "verveling", "119"])
-        grid.addRow(row: ["C", "", "warme windstroming", "35"])
-        grid.addRow(row: ["D", "", "buro lamp", "5"])
+        grid.addRow(row: ["A", space, "testje", "15"])
+        grid.addRow(row: ["B1",space, "anders dan", "1"])
+        grid.addRow(row: ["B2",space, "verveling", "119"])
+        grid.addRow(row: ["C", space, "warme windstroming", "35"])
+        grid.addRow(row: ["D", space, "buro lamp", "5"])
         grid.write(printer: ConsolePrinter())
 
     }
