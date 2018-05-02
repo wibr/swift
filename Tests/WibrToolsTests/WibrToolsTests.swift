@@ -148,14 +148,14 @@ class WibrToolsTests: XCTestCase {
         first.enhancer = StringWrapper()
         columns.append(first)
         columns.append(Column(label:"2", width: space.count))
-        columns.append(Column(label:"3", width: 30, alignment: .Center))
-        columns.append(Column(label:"4", width: 20, alignment: .Right))
+        columns.append(Column(label:"3", width: 40, alignment: .Center))
+        columns.append(Column(label:"4", width: 10, alignment: .Right))
         var grid = Grid(columns: columns)
         grid.headerSeparatorToken = Grid.EM_DASH
         grid.footerSeparatorToken = Grid.EM_DASH
         grid.addRow(row: ["A", space, "testje", "15"])
         grid.addRow(row: ["B1",space, "anders dan", "1"])
-        grid.addRow(row: ["B2",space, "verveling", "119"])
+        grid.addRow(row: ["B2",space, "verveling is nog niet altijd het ergste wat je kan overkomen", "119"])
         grid.addRow(row: ["C", space, "warme windstroming", "35"])
         grid.addRow(row: ["D", space, "buro lamp", "5"])
         grid.write(printer: ConsolePrinter(prefix: "  "))

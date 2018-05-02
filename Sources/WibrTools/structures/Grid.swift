@@ -114,9 +114,9 @@ public struct Column {
         let count = current.count
         let remaining = self.width - count
         if remaining < 0 {
-            return String(current.prefix(-remaining))
+            current = self.cutof(value: current, length: self.width)
         }
-        if let al = self.alignment {
+        else if let al = self.alignment {
             switch al {
                 case .Left :
                     current = padLeft(current, remaining: remaining)
@@ -144,6 +144,14 @@ public struct Column {
         let left = remaining / 2
         let right = self.width - value.count - left
         return Strings.generateString(token: " ", left) + value + Strings.generateString(token: " ", right)
+    }
+    
+    private func cutof(value: String, length: Int) -> String {
+        let len = value.count
+        if len < 1 {
+            return String(value.prefix(length))
+        }
+        return "\(value.prefix(length - 1))…"
     }
 
 }
@@ -205,7 +213,7 @@ public struct Grid {
     }
     
     private func writeRow(printer: Printer, row:Row, rowType: RowType, rowIndex: Int){
-        for index in 0..<columns.count {
+        for index in 0 ..< columns.count {
             let col = columns[index]
             let str = row[index]
             let value = col.prepare(value: str)
