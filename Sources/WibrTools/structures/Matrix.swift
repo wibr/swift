@@ -167,6 +167,17 @@ public struct Matrix<T> : CustomStringConvertible {
         return cell.row >= 0 && cell.row < self.rowSize && cell.column >= 0 && cell.column < self.columnSize
     }
     
+    public func map(transform:(T?) -> T?) -> Matrix<T> {
+        var matrix = self
+        for row in 0 ..< self.rowSize {
+            for column in 0 ..< self.columnSize{
+                let value = self[row,column]
+                matrix[row,column] = transform(value)
+            }
+        }
+        return matrix
+    }
+    
     /**
      *
      */
