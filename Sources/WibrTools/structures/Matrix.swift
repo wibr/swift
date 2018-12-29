@@ -167,17 +167,99 @@ public struct Matrix<T> : CustomStringConvertible {
         return cell.row >= 0 && cell.row < self.rowSize && cell.column >= 0 && cell.column < self.columnSize
     }
     
-    public func map(transform:(T?) -> T?) -> Matrix<T> {
-        var matrix = self
+    public func map<O>(transform:(Int, Int, T?) throws -> O?) rethrows -> Matrix<O>     {
+        var matrix = Matrix<O>(rows: self.rowSize, columns: self.columnSize)
         for row in 0 ..< self.rowSize {
             for column in 0 ..< self.columnSize{
                 let value = self[row,column]
-                matrix[row,column] = transform(value)
+                matrix[row,column] = try transform(row,column,value)
             }
         }
         return matrix
     }
     
+    public mutating func fill(value:T){
+        self.fill { _,_ in value }
+    }
+    public mutating func fill(generator:(_:Int,_:Int) -> T){
+        for row in 0 ..< self.rowSize {
+            for col in 0 ..< self.columnSize{
+                self[row,col] = generator(row,col)
+            }
+        }
+    }
+
+    private typealias Intersection = (current:Int, other:Int, size:Int)
+    
+    public func intersection<U,S>(offset: Cell, otherMatrix:Matrix<U>, transform:(T?,U?) -> S?) -> Matrix<S>?  {
+        guard let rowIntersection = Matrix.calcIntersection(cellOffset: offset.row, otherSize: otherMatrix.rowSize, currentSize: self.rowSize) else {
+            return nil
+        }
+        guard let colIntersection = Matrix.calcIntersection(cellOffset: offset.column, otherSize: otherMatrix.columnSize, currentSize: self.columnSize) else {
+            return nil
+        }
+        var matrix = Matrix<S>(rows: rowIntersection.size, columns: colIntersection.size)
+        for row in 0 ..< rowIntersection.size {
+            for col in 0 ..< colIntersection.size {
+                let currentValue = self[row + rowIntersection.current, col + colIntersection.current]
+                let otherValue = otherMatrix[row + rowIntersection.other, col + colIntersection.other]
+                let newValue = transform(currentValue,otherValue)
+                matrix[row,col] = newValue
+            }
+        }
+        return matrix
+    }
+    
+    public static func intersection<A>(firstMatrix:inout Matrix<A>, secondMatrix:inout Matrix<A>, firstOffsetFromSecond: Cell, transform:(A?,A?) -> A?) -> Matrix<A>?  {
+        guard let rowIntersection = Matrix.calcIntersection(cellOffset: firstOffsetFromSecond.row, otherSize: secondMatrix.rowSize, currentSize: firstMatrix.rowSize) else {
+            return nil
+        }
+        guard let colIntersection = Matrix.calcIntersection(cellOffset: firstOffsetFromSecond.column, otherSize: secondMatrix.columnSize, currentSize: firstMatrix.columnSize) else {
+            return nil
+        }
+        var matrix = Matrix<A>(rows: rowIntersection.size, columns: colIntersection.size)
+        for row in 0 ..< rowIntersection.size {
+            for col in 0 ..< colIntersection.size {
+                let currentValue = firstMatrix[row + rowIntersection.current, col + colIntersection.current]
+                let otherValue = secondMatrix[row + rowIntersection.other, col + colIntersection.other]
+                let newValue = transform(currentValue,otherValue)
+                matrix[row,col] = newValue
+                firstMatrix[row + rowIntersection.current, col + colIntersection.current] = newValue
+                secondMatrix[row + rowIntersection.other, col + colIntersection.other] = newValue
+            }
+        }
+        return matrix
+    }
+
+
+    private static func calcIntersection( cellOffset: Int, otherSize: Int, currentSize:Int ) -> Intersection?{
+        if cellOffset > currentSize {
+            return nil
+        }
+        let reach = cellOffset + otherSize
+        var intersection:Intersection?
+        if cellOffset <= 0 {
+            if reach > 0 {
+                let current = 0
+                let other = current - cellOffset
+                let size = otherSize - other
+                if size > 0 {
+                    intersection = (current, other, size)
+                }
+            }
+        }
+        else {
+            let size = (reach > currentSize) ? currentSize - cellOffset : otherSize
+            if size > 0 {
+                let current = cellOffset
+                let other = 0
+                intersection = (current,other, size)
+            }
+        }
+        return intersection
+    }
+
+
     /**
      *
      */

@@ -183,6 +183,7 @@ public struct Math {
         let low = n % divisor
         return (high:high*divisor, low:low)
     }
+    
     public static func getDigits(number:Int) -> [Int] {
         return toBase(number: number, base: 10)
     }
@@ -195,10 +196,14 @@ public struct Math {
     }
     
     public static func bitLength(number: Int) -> Int {
+        return Math.baseLength(number: number, base: 2)
+    }
+
+    public static func baseLength(number: Int, base:Int = 2) -> Int {
         var p = number
         var count = 0
         while p > 0 {
-            p /= 2
+            p /= base
             count += 1
         }
         return count

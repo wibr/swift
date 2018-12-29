@@ -114,6 +114,14 @@ class WibrToolsTests: XCTestCase {
         XCTAssert(res2 == expected2)
         print(res2)
         
+        let res3 = ModularMath.divide(divider: 13, divisor: 77, modulo: 101)
+        XCTAssert(res3 == 71)
+        
+        let res4 = ModularMath.exponentiate(13, 57, modulo: 101)
+        XCTAssert(res4 == 45)
+
+        let res5 = ModularMath.inverse(77, modulo: 101)
+        XCTAssert(res5 == 21)
     }
     
     func testStatsData() {
@@ -141,6 +149,31 @@ class WibrToolsTests: XCTestCase {
         XCTAssertTrue(count == 9)
     }
     
+    func testMatrixIntersection() {
+        var m0 = Matrix<Int>(rows: 9, columns: 7)
+        m0.fill(value:1)
+        print(m0)
+        var m1 = Matrix<Int>(rows: 6, columns: 4)
+        m1.fill(value:2)
+        print(m1)
+        let offset = Cell(row: 2, column: -1)
+        let im = m0.intersection(offset: offset, otherMatrix: m1, transform:{($0 ?? 0) + ($1 ?? 0)})
+        if let _ = Matrix<Int>.intersection(firstMatrix: &m0, secondMatrix: &m1, firstOffsetFromSecond:offset, transform: {(a, b) in (a ?? 0) + (b ?? 0)}) {
+            print(m0)
+        }
+        XCTAssertNotNil(im)
+        XCTAssertTrue(im?.rowSize == 6)
+        XCTAssertTrue(im?.columnSize == 3)
+    }
+    func testMatrixMapping() {
+        var m0 = Matrix<Int>(rows: 9, columns: 7)
+        m0.fill(value:1)
+        print(m0)
+        let m1 = m0.map(){ (row,column,value) in
+            return "[\(row),\(column)] = \(value?.description ?? "?")"
+        }
+        print(m1)
+    }
     func testGrid() {
         var columns = [Column]()
         var first = Column(label:"1",width: 10, alignment: .Left)
