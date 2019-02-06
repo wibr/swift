@@ -10,6 +10,15 @@ public func XOR (_ first: Bool, _ second: Bool) -> Bool {
     return !(first && second)
 }
 
+infix operator !!
+
+func !!<T>(wrapped:T?, failureText: @autoclosure () -> String) -> T {
+    if let x = wrapped {
+        return x
+    }
+    fatalError(failureText())
+}
+
 public enum InitialisationError : Error {
 	case InvalidArgument(String)
 	case MissingArgument(String)

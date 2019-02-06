@@ -22,6 +22,10 @@ public struct FIFOQueue<Element> : Queue {
     private var left: [Element] = []
     private var right: [Element] = []
     
+    public init(){
+        
+    }
+    
     public mutating func enqueue(_ newElement: Element) {
         right.append(newElement)
     }
@@ -35,7 +39,7 @@ public struct FIFOQueue<Element> : Queue {
     }
 }
 
-extension FIFOQueue : Collection {
+extension FIFOQueue : MutableCollection {
     public var startIndex: Int {
         return 0
     }
@@ -50,11 +54,22 @@ extension FIFOQueue : Collection {
     }
     
     public subscript(position: Int) -> Element {
-        precondition( (0..<endIndex).contains(position), "Index out of bounds")
-        if position < left.endIndex {
-            return left[left.count-position - 1]
+        get {
+            precondition( (0..<endIndex).contains(position), "Index out of bounds")
+            if position < left.endIndex {
+                return left[left.count-position - 1]
+            }
+            return right[position - left.count]
         }
-        return right[position - left.count]
+        set {
+            precondition( (0..<endIndex).contains(position), "Index out of bounds")
+            if position < left.endIndex {
+                left[left.count - position - 1 ] = newValue
+            }
+            else {
+                right[position - left.count] = newValue
+            }
+        }
     }
 }
 
@@ -64,3 +79,12 @@ extension FIFOQueue : ExpressibleByArrayLiteral {
         right = []
     }
 }
+
+extension FIFOQueue : RangeReplaceableCollection {
+    public mutating func replaceSubrange<C:Collection>(_ subrange:Range<Int>, with newElements:C) where C.Element == Element {
+        right = left.reversed() + right
+        left.removeAll()
+        right.replaceSubrange(subrange, with: newElements)
+    }
+}
+
