@@ -148,6 +148,23 @@ public extension String {
 }
 
 public extension String {
+    private static let SlugSafeCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+    public func convertedToSlug() -> String? {
+        if #available(OSX 10.11, *) {
+            if let latin = self.applyingTransform(StringTransform("Any-Latin; Latin-ASCII; Lower;"), reverse: false){
+                let urlComponents = latin.components(separatedBy: String.SlugSafeCharacters)
+                let result = urlComponents.filter{ $0 != ""}.joined(separator: "-")
+                if result.count > 0{
+                    return result
+                }
+            }
+        }
+        return nil
+    }
+}
+
+
+public extension String {
     fileprivate var skipTable: [Character:Int ] {
         var skipTable:[Character:Int] = [:]
         for (i,c) in enumerated(){
