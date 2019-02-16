@@ -62,6 +62,14 @@ public extension SignedInteger{
     }
 }
 
+// MARK: Collection extensions
+
+public extension Collection where Element: Equatable {
+    public func split<S:Sequence>(separators: S) -> [SubSequence] where Element == S.Element {
+        return split{separators.contains($0)}
+    }
+}
+
 // MARK: Mutable Collection extensions
 public extension MutableCollection where Self:RandomAccessCollection {
     public mutating func shuffle() {
@@ -201,5 +209,41 @@ public extension String {
             }
         }
         return i
+    }
+}
+
+public extension String {
+    public func words(with charset:CharacterSet = .alphanumerics) -> [Substring]{
+        return self.unicodeScalars.split{
+            !charset.contains($0)
+        }.map(Substring.init)
+    }
+}
+
+public extension String {
+    public func wrapped( after: Int = 70 ) -> String {
+        var i = 0
+        let lines = self.split(omittingEmptySubsequences: false){
+            character in
+                switch character {
+                case "\n" where i >= after, " " where i >= after :
+                   i = 0
+                    return true
+                default :
+                   i += 1
+                return false
+            }
+        }
+        return lines.joined(separator: "\n")
+    }
+}
+
+public extension String {
+    public var fileExtension : String? {
+        guard let period = self.lastIndex(of: ".") else {
+            return nil
+        }
+        let extensionStart = self.index(after: period)
+        return String(self[extensionStart...])
     }
 }

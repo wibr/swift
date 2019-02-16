@@ -200,4 +200,30 @@ class WibrToolsTests: XCTestCase {
             return "*\(value)*"
         }
     }
+    
+    func testFileInfo(){
+        let fileInfo1:FileInfo = ""
+        XCTAssert(fileInfo1.path == nil)
+        XCTAssert(fileInfo1.filename == "")
+        XCTAssert(fileInfo1.fileext == nil)
+        print("FileInfo1: \(fileInfo1)")
+        
+        let fileInfo2: FileInfo = "/"
+        XCTAssert(fileInfo2.path == [""])
+        XCTAssert(fileInfo2.filename == "")
+        XCTAssert(fileInfo2.fileext == nil)
+        print("FileInfo2: \(fileInfo2)")
+
+        let fileInfo3: FileInfo = "/path/a.txt"
+        XCTAssert(fileInfo3.path == ["","path"])
+        XCTAssert(fileInfo3.filename == "a")
+        XCTAssert(fileInfo3.fileext == "txt")
+        print("FileInfo3: \(fileInfo3)")
+
+        let fileInfo4: FileInfo = "path/a.txt"
+        XCTAssert(fileInfo4.path == ["path"])
+        XCTAssert(fileInfo4.filename == "a")
+        XCTAssert(fileInfo4.fileext == "txt")
+        print("FileInfo4: \(fileInfo4)")
+    }
 }
