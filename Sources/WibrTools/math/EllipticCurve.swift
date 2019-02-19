@@ -13,29 +13,30 @@ import Foundation
 public struct Def {
     public static let Constant = 4.0
     public static let XFactor = 2.0
+    public static let Modulo = 17
 }
 
 public struct Point {
     public static let Zero = Point(x:0,y:0)
     
-    let x:Double
-    let y:Double
+    let x:Int
+    let y:Int
     
     public func add(point:Point) -> Point {
         let dy = self.y - point.y
         let dx = self.x - point.x
-        let s = dy / dx
-        let rx = (s * s)  - dx
-        let ry = s * (self.x - rx) - self.y
-        return Point(x: rx, y: ry)
+        let s = ModularMath.divide(divider:dy, divisor: dx, modulo: Def.Modulo)
+        let xl = (s * s  - dx) % Def.Modulo
+        let yl = (s * (self.x - xl) - self.y) % Def.Modulo
+        return Point(x: xl, y: yl)
     }
     
-    public func double() -> Point {
-        let s = ((3 + self.x * self.x) + Def.XFactor) / (2 * self.y)
-        let rx = s * s  - (2 * self.x)
-        let ry = s * (self.x - rx) - self.y
-        return Point(x: rx, y: ry)
-    }
+//    public func double() -> Point {
+//        let s = ((3 + self.x * self.x) + Def.XFactor) / (2 * self.y)
+//        let rx = s * s  - (2 * self.x)
+//        let ry = s * (self.x - rx) - self.y
+//        return Point(x: rx, y: ry)
+//    }
     
     public func multiply(scalar:Int) -> Point {
         var n = self
@@ -45,7 +46,7 @@ public struct Point {
             if ( (scalar & (1 << bit)) > 0 ) {
                 r = r.add(point: n)
             }
-            n = n.double()
+            n = n.add(point: n)
         }
         return r
     }
@@ -65,6 +66,8 @@ public struct EllipticCurve {
             return (x * x * x) + (Def.XFactor * x) + Def.Constant
         }
     }
+    
+    
     
 }
 

@@ -7,47 +7,47 @@
 
 import Foundation
 
-class Node<T : Equatable> {
-    var value: T
-    var edges = [Edge<T>]()
+public class Node<T : Equatable> {
+    public var value: T
+    public var edges = [Edge<T>]()
     
-    init(value:T){
+    public init(value:T){
         self.value = value
     }
     
-    func attach(node:Node<T>, weight:Double = 1.0) -> Node<T> {
+    public func attach(node:Node<T>, weight:Double = 1.0) -> Node<T> {
         let edge = Edge<T>(weight: weight, left: self, right: node)
         self.edges.append(edge)
         return node
     }
     
-    func detach(node:Node<T>) {
+    public func detach(node:Node<T>) {
         
     }
     
-    func getEdge(node:Node<T>) -> Edge<T>? {
+    public func getEdge(node:Node<T>) -> Edge<T>? {
         return self.edges.filter{$0.right == node}.first
     }
 }
 
 extension Node : Equatable{
-    static func ==(lhs: Node, rhs: Node) -> Bool {
+    public static func ==(lhs: Node, rhs: Node) -> Bool {
         return lhs.value == rhs.value
     }
 }
 
-class Edge<S : Equatable> {
-    var weight: Double
-    var left: Node<S>
-    var right: Node<S>
+public class Edge<S : Equatable> {
+    public var weight: Double
+    public var left: Node<S>
+    public var right: Node<S>
     
-    init(weight:Double, left: Node<S>, right: Node<S>){
+    public init(weight:Double, left: Node<S>, right: Node<S>){
         self.weight = weight
         self.left = left
         self.right = right
     }
     
-    convenience init(left: Node<S>, right: Node<S>){
+    public convenience init(left: Node<S>, right: Node<S>){
         self.init(weight:1.0, left: left, right: right)
     }
 }

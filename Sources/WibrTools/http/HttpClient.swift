@@ -10,10 +10,16 @@ import Foundation
 public struct HttpResponse {
     public let status: Int
     public let data: Data?
+    public var headers = [String:String]()
     
-    init(status:Int, data:Data?){
+    init(status:Int, allHeaders:[AnyHashable:Any], data:Data?){
         self.status = status
         self.data = data
+        for entry in allHeaders {
+            if let key = entry.key as? String, let val = entry.value as? String {
+                self.headers[key] = val
+            }
+        }
     }
 }
 
@@ -60,7 +66,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
     
     public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?){
         
-    }
+    } 
     
     func debug(data: Data?) {
         if self.debug, let data = data, let str = String(data:data, encoding:.utf8) {
@@ -87,7 +93,7 @@ private class NoopRequestSender : NSObject, URLSessionDelegate, RequestSender  {
             guard let r = response as? HTTPURLResponse else {
                 throw ResponseError.fatal("URLResponse not of expected type HTTPURLResponse but of actual-type: \(String(describing: response.self))")
             }
-            let result = Result.success(HttpResponse(status: r.statusCode, data: data))
+            let result = Result.success(HttpResponse(status: r.statusCode, allHeaders: r.allHeaderFields, data: data))
             return try result.resolve()
         }
     }

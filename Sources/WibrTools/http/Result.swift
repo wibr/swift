@@ -33,6 +33,19 @@ public extension Result {
     }
 }
 
+public extension Result {
+    public var isSuccess : Bool {
+        switch self {
+            case .success: return true
+            case .failure: return false
+        }
+    }
+    
+    public var isError : Bool {
+        return !isSuccess
+    }
+}
+
 public extension Result where T : Encodable {
     public func json() -> Result<String> {
         switch self {
@@ -48,22 +61,22 @@ public extension Result {
     // Return the value if it's a .Success or throw the error if it's a .Failure
     public func resolve() throws -> T {
         switch self {
-        case Result.success(let value): return value
-        case Result.failure(let error): throw error
+        case .success(let value): return value
+        case .failure(let error): throw error
         }
     }
     
     public func value() -> T? {
         switch self {
-        case Result.success(let value): return value
-        case Result.failure: return nil
+        case .success(let value): return value
+        case .failure: return nil
         }
     }
     
     public func error() -> Error? {
         switch self {
-        case Result.success: return nil
-        case Result.failure(let error): return error
+        case .success: return nil
+        case .failure(let error): return error
         }
         
     }
@@ -91,8 +104,8 @@ public extension Result {
 extension Result : CustomStringConvertible {
     public var description: String {
         switch self {
-        case Result.success(let value): return "\(value)"
-        case Result.failure(let error): return "\(error)"
+        case .success(let value): return "\(value)"
+        case .failure(let error): return "\(error)"
         }
     }
 }

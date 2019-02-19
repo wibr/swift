@@ -8,18 +8,18 @@
 
 import Foundation
 
-struct Moustache {
+public struct Moustache {
     var pattern = "\\{\\{[^\\}]*\\}\\}"
     var openLen = 2
     var closeLen = 2
     var leftOffset = 0
     var rightOffset = 0
     
-    init(){
+    public init(){
         self.calcOffsets()
     }
     
-    init(pattern:String, openLen:Int, closeLen: Int){
+    public init(pattern:String, openLen:Int, closeLen: Int){
         self.pattern = pattern
         self.openLen = openLen
         self.closeLen = closeLen
@@ -31,7 +31,7 @@ struct Moustache {
         self.rightOffset = self.openLen + self.closeLen
     }
     
-    func expand(expression : String, values:[String:String]) -> String {
+    public func expand(expression : String, values:[String:String]) -> String {
         let nsstr = expression as NSString
         let options : NSRegularExpression.Options = []
         do {

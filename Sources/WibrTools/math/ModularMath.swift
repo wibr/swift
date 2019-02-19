@@ -7,6 +7,36 @@
 
 import Foundation
 
+public struct Mod {
+    let modulo: Int
+    
+    
+    
+    public func add(_ a:Int, _ b: Int ) -> Int {
+        return ModularMath.add(a, b, modulo: self.modulo)
+    }
+    
+    public func subtract(_ a: Int, _ b: Int) -> Int {
+        return ModularMath.subtract(a, b, modulo: self.modulo)
+    }
+    
+    public func multiply(_ a: Int, _ b: Int) -> Int {
+        return ModularMath.multiply(a, b, modulo: self.modulo)
+    }
+    
+    public func exponentiate( _ a: Int, b:Int ) -> Int {
+        return ModularMath.exponentiate(a, b, modulo: self.modulo)
+    }
+    
+    public func inverse( _ a : Int ) -> Int {
+        return ModularMath.inverse(a, modulo: self.modulo)
+    }
+    
+    public func divide(divider a:Int, divisor b:Int ) -> Int {
+        return ModularMath.divide(divider: a, divisor: b,  modulo: self.modulo)
+    }
+}
+
 public struct ModularMath {
     
     public static func add(_ a:Int, _ b:Int, modulo p: Int) -> Int {

@@ -58,3 +58,65 @@ public struct FileWalker {
         }
     }
 }
+
+public struct FileInfo : Codable, CustomStringConvertible {
+    public let path:[String]?
+    public let filename: String
+    public let fileext: String?
+    
+    public init(path:[String]?, filename: String, fileext:String?){
+        self.path = path
+        self.filename = filename
+        self.fileext = fileext
+    }
+    
+    public init(name: String){
+        var value = name;
+        let parts = value.components(separatedBy: "/")
+        if parts.count == 1 {
+            self.path = nil
+        }
+        else {
+            self.path = Array(parts.dropLast())
+            value = parts.last!
+        }
+        if let period = value.lastIndex(of: "."){
+            self.filename = String(value[..<period])
+            self.fileext = String(value[value.index(after: period)...])
+        }
+        else {
+            self.filename = String(value)
+            self.fileext = nil
+        }
+    }
+    
+    public var pathIsAbsolute : Bool {
+        if let first = self.path?.first, first == "" {
+            return true
+        }
+        return false
+    }
+    
+    public var fullFilename : String {
+        var result = self.filename
+        if let ext = self.fileext {
+            result += "." + ext
+        }
+        return result
+    }
+    
+    public var description: String{
+        var result = ""
+        if let path = self.path {
+            result += path.joined(separator: "/") + "/"
+        }
+        result += self.fullFilename
+        return result
+    }
+}
+
+extension FileInfo : ExpressibleByStringLiteral{
+    public init(stringLiteral value: String) {
+        self.init(name: value)
+    }
+}
