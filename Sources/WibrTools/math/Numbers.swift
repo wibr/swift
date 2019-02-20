@@ -91,7 +91,7 @@ public struct BigInt : CustomStringConvertible {
             s = String(s[fromIndex ..< s.endIndex])
             sgn = .negative
         }
-        let array = s.flatMap{Int(String($0))}
+        let array = s.compactMap{Int(String($0))}
         if let first = array.first, first == 0 {
             sgn = .none
         }
