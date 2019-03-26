@@ -8,7 +8,7 @@
 import Foundation
 
 public extension Error {
-    public func failure<T>() -> Result<T> {
+    func failure<T>() -> Result<T> {
         return Result.failure(self)
     }
 }
@@ -19,13 +19,13 @@ public enum Result<T> {
 }
 
 public extension Result {
-    public func map<U>(_ f: (T) -> U) -> Result<U> {
+    func map<U>(_ f: (T) -> U) -> Result<U> {
         switch self {
         case .success(let t): return .success(f(t))
         case .failure(let err): return .failure(err)
         }
     }
-    public func flatMap<U>(_ f: (T) -> Result<U>) -> Result<U> {
+    func flatMap<U>(_ f: (T) -> Result<U>) -> Result<U> {
         switch self {
         case .success(let t): return f(t)
         case .failure(let err): return .failure(err)
@@ -34,20 +34,20 @@ public extension Result {
 }
 
 public extension Result {
-    public var isSuccess : Bool {
+    var isSuccess : Bool {
         switch self {
             case .success: return true
             case .failure: return false
         }
     }
     
-    public var isError : Bool {
+    var isError : Bool {
         return !isSuccess
     }
 }
 
 public extension Result where T : Encodable {
-    public func json() -> Result<String> {
+    func json() -> Result<String> {
         switch self {
         case .success(let t) :
             return Json.encodeToStringResult(object: t)
@@ -59,21 +59,21 @@ public extension Result where T : Encodable {
 
 public extension Result {
     // Return the value if it's a .Success or throw the error if it's a .Failure
-    public func resolve() throws -> T {
+    func resolve() throws -> T {
         switch self {
         case .success(let value): return value
         case .failure(let error): throw error
         }
     }
     
-    public func value() -> T? {
+    func value() -> T? {
         switch self {
         case .success(let value): return value
         case .failure: return nil
         }
     }
     
-    public func error() -> Error? {
+    func error() -> Error? {
         switch self {
         case .success: return nil
         case .failure(let error): return error
@@ -82,7 +82,7 @@ public extension Result {
     }
     
     // Construct a .Success if the expression returns a value or a .Failure if it throws
-    public init(_ throwingExpr: () throws -> T) {
+    init(_ throwingExpr: () throws -> T) {
         do {
             let value = try throwingExpr()
             self = Result.success(value)
@@ -93,7 +93,7 @@ public extension Result {
 }
 
 public extension Result {
-    public func decodeError<T>() -> T? {
+    func decodeError<T>() -> T? {
         if let err = error(), err is T {
            return err as? T
         }

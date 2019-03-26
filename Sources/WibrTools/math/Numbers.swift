@@ -295,8 +295,9 @@ extension BigInt : Comparable{
 }
 
 extension BigInt : Hashable {
-    public var hashValue: Int {
-        return self.description.hashValue
+    
+    public func hash(into hasher: inout Hasher){
+        hasher.combine(self.description.hashValue)
     }
 }
 

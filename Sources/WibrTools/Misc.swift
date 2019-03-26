@@ -19,6 +19,15 @@ func !!<T>(wrapped:T?, failureText: @autoclosure () -> String) -> T {
     fatalError(failureText())
 }
 
+infix operator ?!: NilCoalescingPrecedence
+
+public func ?!<A>(lhs: A?, rhs: Error) throws -> A {
+    guard let value = lhs else {
+        throw rhs
+    }
+    return value
+}
+
 public enum InitialisationError : Error {
 	case InvalidArgument(String)
 	case MissingArgument(String)
@@ -33,11 +42,11 @@ public extension Bool {
 
 // MARK: Double extensions
 public extension Double {
-    public func withinRange(other:Double, delta: Double) -> Bool {
+    func withinRange(other:Double, delta: Double) -> Bool {
         return (other + delta).isGreater(than: self) && (other - delta).isLess(than: self)
     }
     
-    public func isGreater(than: Double) -> Bool{
+    func isGreater(than: Double) -> Bool{
         return than.isLess(than: self)
     }
 }
@@ -45,7 +54,7 @@ public extension Double {
 // MARK: Array extensions
 
 public extension Array {
-    public mutating func shuffle () {
+    mutating func shuffle () {
         for i in (0..<self.count).reversed() {
             let ix1 = i
             let ix2 = Int(arc4random_uniform(UInt32(i+1)))
@@ -56,7 +65,7 @@ public extension Array {
 
 // MARK: SignedInteger extensions
 public extension SignedInteger{
-    public static func arc4random_uniform(_ upper_bound: Self) -> Self{
+     static func arc4random_uniform(_ upper_bound: Self) -> Self{
         precondition(upper_bound > 0 && Int(upper_bound) < Int(UInt32.max),"arc4random_uniform only callable up to \(UInt32.max)")
         return numericCast(Darwin.arc4random_uniform(numericCast(upper_bound)))
     }
@@ -65,14 +74,14 @@ public extension SignedInteger{
 // MARK: Collection extensions
 
 public extension Collection where Element: Equatable {
-    public func split<S:Sequence>(separators: S) -> [SubSequence] where Element == S.Element {
+    func split<S:Sequence>(separators: S) -> [SubSequence] where Element == S.Element {
         return split{separators.contains($0)}
     }
 }
 
 // MARK: Mutable Collection extensions
 public extension MutableCollection where Self:RandomAccessCollection {
-    public mutating func shuffle() {
+    mutating func shuffle() {
         var i = startIndex
         let beforeEndIndex = index(before:endIndex)
         while i < beforeEndIndex {
@@ -88,7 +97,7 @@ public extension MutableCollection where Self:RandomAccessCollection {
 // MARK: Sequence extensions
 
 public extension Sequence {
-    public func shuffled() -> [Iterator.Element] {
+    func shuffled() -> [Iterator.Element] {
         var clone = Array(self)
         clone.shuffle()
         return clone
@@ -96,7 +105,7 @@ public extension Sequence {
 }
 
 public extension Sequence {
-    public func reduce<A>( _ initial: A, combine: (inout A, Iterator.Element) -> () ) -> A {
+    func reduce<A>( _ initial: A, combine: (inout A, Iterator.Element) -> () ) -> A {
         var result = initial
         for el in self {
             combine(&result, el)
@@ -106,7 +115,7 @@ public extension Sequence {
 }
 
 public extension Sequence {
-    public func split(batchSize: Int) -> AnySequence<[Iterator.Element]> {
+    func split(batchSize: Int) -> AnySequence<[Iterator.Element]> {
         return AnySequence { () -> AnyIterator<[Iterator.Element]> in
             var iterator = self.makeIterator()
             return AnyIterator {
@@ -121,7 +130,7 @@ public extension Sequence {
 }
 
 public extension Sequence {
-    public func failingFlatMap<T>( transform: (Self.Iterator.Element) throws -> T?) rethrows -> [T]? {
+    func failingFlatMap<T>( transform: (Self.Iterator.Element) throws -> T?) rethrows -> [T]? {
         var result: [T] = []
         for element in self {
             guard let transformed = try transform(element) else { return nil }
@@ -134,7 +143,7 @@ public extension Sequence {
 // MARK: Data extensions
 
 public extension Data {
-    public var utf8String : String? {
+    var utf8String : String? {
         return String(data:self, encoding:.utf8)
     }
 }
@@ -143,20 +152,20 @@ public extension Data {
 // MARK: String extensions
 
 public extension String {
-    public func trim() -> String {
+    func trim() -> String {
         return self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
 public extension String {
-    public func wordValue(offset:Int = 64) -> Int {
+    func wordValue(offset:Int = 64) -> Int {
         return self.unicodeScalars.reduce(0) {$0 + (Int($1.value) - offset)}
     }
 }
 
 public extension String {
     private static let SlugSafeCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
-    public func convertedToSlug() -> String? {
+    func convertedToSlug() -> String? {
         if #available(OSX 10.11, *) {
             if let latin = self.applyingTransform(StringTransform("Any-Latin; Latin-ASCII; Lower;"), reverse: false){
                 let urlComponents = latin.components(separatedBy: String.SlugSafeCharacters)
@@ -187,7 +196,7 @@ public extension String {
         return match(from: index(before: currentIndex), with: "\(pattern.dropLast())")
     }
     
-    public func index(of pattern: String) -> Index? {
+    func index(of pattern: String) -> Index? {
         // 1
         let patternLength = pattern.count
         guard patternLength > 0, patternLength <= count else { return nil }
@@ -212,7 +221,7 @@ public extension String {
 }
 
 public extension String {
-    public func words(with charset:CharacterSet = .alphanumerics) -> [Substring]{
+    func words(with charset:CharacterSet = .alphanumerics) -> [Substring]{
         return self.unicodeScalars.split{
             !charset.contains($0)
         }.map(Substring.init)
@@ -220,7 +229,7 @@ public extension String {
 }
 
 public extension String {
-    public func wrapped( after: Int = 70 ) -> String {
+    func wrapped( after: Int = 70 ) -> String {
         var i = 0
         let lines = self.split(omittingEmptySubsequences: false){
             character in
@@ -238,7 +247,7 @@ public extension String {
 }
 
 public extension String {
-    public var fileExtension : String? {
+    var fileExtension : String? {
         guard let period = self.lastIndex(of: ".") else {
             return nil
         }

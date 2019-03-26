@@ -18,7 +18,7 @@ public struct Regex {
 }
 
 public extension Regex {
-    public func match(_ text:String) -> Bool {
+    func match(_ text:String) -> Bool {
         if regexp.first == "^" {
             return Regex.matchHere(regexp:regexp.dropFirst(), text:text[...])
         }

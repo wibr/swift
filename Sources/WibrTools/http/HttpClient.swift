@@ -21,6 +21,13 @@ public struct HttpResponse {
             }
         }
     }
+    
+    public func decode<T:Decodable>(type:T.Type) -> Result<T>?{
+        if let data = self.data {
+            return Json.decode(data, type)
+        }
+        return nil
+    }
 }
 
 public enum RequestError: Error {

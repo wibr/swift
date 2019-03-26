@@ -46,7 +46,7 @@ public struct Logger {
         line function: String = #function,
         line: Int = #line) {
         if condition { return }
-        self.log(level: Level.debug, condition: condition, message: message)
+        self.log(level: Level.debug, condition: condition, message: message())
     }
     
     public  func info(
@@ -56,7 +56,7 @@ public struct Logger {
         line function: String = #function,
         line: Int = #line) {
         if condition { return }
-        self.log(level: Level.info, condition: condition, message: message)
+        self.log(level: Level.info, condition: condition, message: message())
     }
     
     public  func warning(
@@ -66,7 +66,7 @@ public struct Logger {
         line function: String = #function,
         line: Int = #line) {
         if condition { return }
-        self.log(level: Level.warning, condition: condition, message: message)
+        self.log(level: Level.warning, condition: condition, message: message())
     }
 
     public func error(
@@ -76,6 +76,6 @@ public struct Logger {
         line function: String = #function,
         line: Int = #line) {
         if condition { return }
-        self.log(level: Level.error, condition: condition, message: message)
+        self.log(level: Level.error, condition: condition, message: message())
     }
 }

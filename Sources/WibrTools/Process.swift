@@ -83,7 +83,7 @@ public protocol AppConfig {
 }
 
 public extension AppConfig {
-    public var optionDesc: String {
+    var optionDesc: String {
         var result = ""
         let count = options.count
         if ( count > 0 ){
