@@ -49,6 +49,10 @@ public extension Double {
     func isGreater(than: Double) -> Bool{
         return than.isLess(than: self)
     }
+    
+    static var τ : Double {
+        return MathConstant.τ.rawValue
+    }
 }
 
 // MARK: Array extensions
