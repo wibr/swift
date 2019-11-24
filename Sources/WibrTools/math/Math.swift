@@ -219,6 +219,18 @@ public struct Math {
         return values
     }
     
+    public static func toDecimals(number:Int, consumer:(Int) -> Void){
+        Math.toBase(number: number, base: 10, consumer: consumer)
+    }
+
+    public static func toBase(number:Int, base: Int = 2, consumer:(Int) -> Void){
+        var v = number
+        repeat {
+            consumer(v % base)
+            v = v / base
+        } while v > 0
+    }
+    
     public static func fromBinary(number:[Int]) -> Int {
         return Math.fromBase(number: number, base: 2)
     }
